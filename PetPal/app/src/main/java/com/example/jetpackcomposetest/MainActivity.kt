@@ -43,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -51,23 +52,28 @@ import com.example.jetpackcomposetest.ui.theme.JetpackComposeTestTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             JetpackComposeTestTheme {
+                // Set up NavController
                 val navController = rememberNavController()
-
-                NavHost(navController = navController, startDestination = "main") {
-                    composable("main") { MainScreen { navController.navigate("settings") } }
-                    composable("settings") { SettingsScreen() }
+                // NavHost with MainScreen and SettingsScreen
+                NavHost(
+                    navController = navController,
+                    startDestination = "main_screen"
+                ) {
+                    composable("main_screen") {
+                        MainScreen(navController = navController) // Main Screen
+                    }
+                    composable("settings_screen") {
+                        SettingsScreen(navController = navController) // Settings Screen
+                    }
                 }
             }
         }
-
-
     }
 
     @Composable
-    fun MainScreen(onSettingsClick: () -> Unit) {
+    fun MainScreen(navController: NavController) {
         JetpackComposeTestTheme {
             Column(
                 modifier = Modifier
@@ -165,7 +171,7 @@ class MainActivity : ComponentActivity() {
                                 .width(40.dp)
                                 .height(40.dp)
                                 .align(Alignment.CenterVertically)
-                                .clickable { onSettingsClick() },
+                                .clickable { navController.navigate("settings_screen") },
                             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                             shape = RoundedCornerShape(25.dp)
