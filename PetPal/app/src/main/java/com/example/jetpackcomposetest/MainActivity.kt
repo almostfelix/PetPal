@@ -1,6 +1,7 @@
 package com.example.jetpackcomposetest
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -42,6 +43,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcomposetest.ui.theme.JetpackComposeTestTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,196 +54,211 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             JetpackComposeTestTheme {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = colorResource(id = R.color.bg)),
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White)
-                            .padding(12.dp, 12.dp, 0.dp, 6.dp)
-                            .height(52.dp),
-                    ) {
-                        // Align the icon to the start (left)
-                        Icon(
-                            painter = painterResource(R.drawable.logo),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .align(Alignment.CenterStart),
-                            tint = Color.Unspecified
-                        )
+                val navController = rememberNavController()
 
-                        // Center the Card in the Box
-                        Card(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .width(180.dp)
-                                .height(50.dp),
-                            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                            shape = RoundedCornerShape(25.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .padding(12.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.baseline_calendar_month_32),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterVertically)
-                                    //tint = Color.Unspecified
-                                )
-                                Text(
-                                    text = "Max birthday in 2 days!",
-                                    fontSize = 12.sp,
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .wrapContentSize(Alignment.Center)
-                                )
-                            }
-                        }
+                NavHost(navController = navController, startDestination = "main") {
+                    composable("main") { MainScreen { navController.navigate("settings") } }
+                    composable("settings") { SettingsScreen() }
+                }
+            }
+        }
+
+
+    }
+
+    @Composable
+    fun MainScreen(onSettingsClick: () -> Unit) {
+        JetpackComposeTestTheme {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = colorResource(id = R.color.bg)),
+                verticalArrangement = Arrangement.Top
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White)
+                        .padding(12.dp, 12.dp, 0.dp, 6.dp)
+                        .height(52.dp),
+                ) {
+                    // Align the icon to the start (left)
+                    Icon(
+                        painter = painterResource(R.drawable.logo),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.CenterStart),
+                        tint = Color.Unspecified
+                    )
+
+                    // Center the Card in the Box
+                    Card(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .width(180.dp)
+                            .height(50.dp),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        shape = RoundedCornerShape(25.dp)
+                    ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxHeight()
-                                .align(Alignment.CenterEnd)
-                                .width(100.dp),
-                            horizontalArrangement = Arrangement.Center
+                                .padding(12.dp)
                         ) {
-                            Card(
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_calendar_month_32),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .align(Alignment.CenterVertically)
+                                //tint = Color.Unspecified
+                            )
+                            Text(
+                                text = "Max birthday in 2 days!",
+                                fontSize = 12.sp,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .wrapContentSize(Alignment.Center)
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .align(Alignment.CenterEnd)
+                            .width(100.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .width(40.dp)
+                                .height(40.dp)
+                                .align(Alignment.CenterVertically),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                            shape = RoundedCornerShape(25.dp)
+                        ) {
+                            Box(
                                 modifier = Modifier
                                     .width(40.dp)
                                     .height(40.dp)
-                                    .align(Alignment.CenterVertically),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                                shape = RoundedCornerShape(25.dp)
+                                    .fillMaxHeight(),
                             ) {
-                                Box(
+                                Icon(
+                                    painter = painterResource(R.drawable.baseline_add_32),
+                                    contentDescription = null,
+                                    tint = colorResource(id = R.color.accent_dark),
                                     modifier = Modifier
-                                        .width(40.dp)
-                                        .height(40.dp)
-                                        .fillMaxHeight(),
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_add_32),
-                                        contentDescription = null,
-                                        tint = colorResource(id = R.color.accent_dark),
-                                        modifier = Modifier
-                                            .size(32.dp)
-                                            .align(Alignment.Center)
-                                    )
-                                }
-
+                                        .size(32.dp)
+                                        .align(Alignment.Center)
+                                )
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                        }
 
-                            Card(
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Card(
+                            modifier = Modifier
+                                .width(40.dp)
+                                .height(40.dp)
+                                .align(Alignment.CenterVertically)
+                                .clickable { onSettingsClick() },
+                            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            shape = RoundedCornerShape(25.dp)
+                        ) {
+                            Box(
                                 modifier = Modifier
                                     .width(40.dp)
                                     .height(40.dp)
-                                    .align(Alignment.CenterVertically),
-                                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                                shape = RoundedCornerShape(25.dp)
+                                    .fillMaxHeight(),
                             ) {
-                                Box(
+                                Icon(
+                                    painter = painterResource(R.drawable.baseline_settings_32),
+                                    contentDescription = null,
+                                    tint = colorResource(id = R.color.black_icon),
                                     modifier = Modifier
-                                        .width(40.dp)
-                                        .height(40.dp)
-                                        .fillMaxHeight(),
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.baseline_settings_32),
-                                        contentDescription = null,
-                                        tint = colorResource(id = R.color.black_icon),
-                                        modifier = Modifier
-                                            .size(32.dp)
-                                            .align(Alignment.Center)
-                                    )
-                                }
-
+                                        .size(32.dp)
+                                        .align(Alignment.Center)
+                                )
                             }
+
                         }
                     }
                 }
             }
         }
+
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = colorResource(id = R.color.bg)),
-        verticalArrangement = Arrangement.Top
-    ) {
-        Box(
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingPreview() {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(12.dp, 12.dp, 0.dp, 6.dp)
-                .height(52.dp),
+                .fillMaxSize()
+                .background(color = colorResource(id = R.color.bg)),
+            verticalArrangement = Arrangement.Top
         ) {
-            // Align the icon to the start (left)
-            Icon(
-                painter = painterResource(R.drawable.logo),
-                contentDescription = null,
+            Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.CenterStart),
-                tint = Color.Unspecified
-            )
-
-            // Center the Card in the Box
-            Card(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .width(180.dp)
-                    .height(50.dp),
-                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                shape = RoundedCornerShape(25.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(12.dp, 12.dp, 0.dp, 6.dp)
+                    .height(52.dp),
             ) {
+                // Align the icon to the start (left)
+                Icon(
+                    painter = painterResource(R.drawable.logo),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.CenterStart),
+                    tint = Color.Unspecified
+                )
+
+                // Center the Card in the Box
+                Card(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .width(180.dp)
+                        .height(50.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    shape = RoundedCornerShape(25.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(12.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_calendar_month_32),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.CenterVertically)
+                            //tint = Color.Unspecified
+                        )
+                        Text(
+                            text = "Max birthday in 2 days!",
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(Alignment.Center)
+                        )
+                    }
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .padding(12.dp)
+                        .align(Alignment.CenterEnd)
+                        .width(100.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_calendar_month_32),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .align(Alignment.CenterVertically)
-                        //tint = Color.Unspecified
-                    )
-                    Text(
-                        text = "Max birthday in 2 days!",
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentSize(Alignment.Center)
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .align(Alignment.CenterEnd)
-                    .width(100.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
                     Card(
                         modifier = Modifier
                             .width(40.dp)
@@ -267,33 +286,38 @@ fun GreetingPreview() {
 
                     }
 
-                Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
 
-                Card(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(40.dp)
-                        .align(Alignment.CenterVertically),
-                    colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    shape = RoundedCornerShape(25.dp)
-                ) {
-                    Box(
+                    Card(
                         modifier = Modifier
                             .width(40.dp)
                             .height(40.dp)
-                            .fillMaxHeight(),
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_settings_32),
-                            contentDescription = null,
-                            tint = colorResource(id = R.color.black_icon),
-                            modifier = Modifier
-                                .size(32.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
+                            .align(Alignment.CenterVertically)
+                            .clickable { Log.d("log", "hello") },
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        shape = RoundedCornerShape(25.dp)
 
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .width(40.dp)
+                                .height(40.dp)
+                                .fillMaxHeight(),
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_settings_32),
+                                contentDescription = null,
+                                tint = colorResource(id = R.color.black_icon),
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .align(Alignment.Center)
+                            )
+
+
+                        }
+
+                    }
                 }
             }
         }
