@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#fefefe</color>
+    <color name="prim">#99B4FF</color>
+    <color name="prim_sec">#DDE6FF</color>
+    <color name="accent">#FFDDFA</color>
+    <color name="accent_dark">#FF99F0</color>
+    <color name="black_icon">#2D2D2D</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="text_color_dark">#000000</color>
+</resources>
