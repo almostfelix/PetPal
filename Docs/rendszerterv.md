@@ -171,7 +171,7 @@ Az alkalmazás elérhető lesz a Google Play áruházban. A felhasználók szám
 ### 6. Fizikai környezet
 
 #### Fejlesztési platform:
-Az alkalmazás fejlesztése Kotlin nyelven történik, az Android Studio fejlesztői környezetben. Az alkalmazás felhasználói felülete XML segítségével készül.
+Az alkalmazás fejlesztése Kotlin nyelven történik, az Android Studio fejlesztői környezetben. Az alkalmazás felhasználói felülete Kotlin Jetpack Compose segítségével készül.
 
 #### Szoftverkomponensek:
 Az alkalmazásban **nincs használatban vásárolt szoftverkomponens**. Az alkalmazás az Android SDK és az ingyenesen elérhető fejlesztési eszközök felhasználásával történik a fejlesztés.
@@ -184,12 +184,13 @@ Az alkalmazásban **nincs használatban vásárolt szoftverkomponens**. Az alkal
 - **Külső API-k:** Az alkalmazás **külső API-kat** használ kizárólag az állatfajok és fajták azonosításához, illetve "Facts about pets" megjelenítésére. Az API-k nem tárolnak adatokat, és nem történik adatfeldolgozás rajtuk keresztül. Az alkalmazás nem rendelkezik saját szerverrel vagy adatbázissal, az összes felhasználói adat helyben, az eszközön kerül mentésre.
   
 #### Fejlesztő eszközök:
-- **Fejlesztői környezet:** Az alkalmazás fejlesztése az **Android Studio** környezetben zajlik, amely a hivatalos Android fejlesztői eszköz. Az Android SDK-t és az XML alapú felhasználói felületet használja a fejlesztéshez.
+- **Fejlesztői környezet:** Az alkalmazás fejlesztése az **Android Studio** környezetben zajlik, amely a hivatalos Android fejlesztői eszköz.
+
 - **Forráskódkezelés:** Git-alapú verziókezelési rendszerben történik a forráskód nyomon követése és karbantartása, lehetővé téve a kollaboratív fejlesztést és a változtatások követését.
 
 #### Keretrendszer és könyvtárak:
 - **Kotlin alapú fejlesztés:** Az alkalmazás fejlesztése Kotlin programozási nyelven történik, amely biztosítja a modern és hatékony Android alkalmazásfejlesztést.
-- **XML alapú felhasználói felület:** Az alkalmazás UI/UX tervezése XML-en keresztül történik, amely támogatja a vizuális komponensek pontos és strukturált elrendezését.
+- **Jetpack Compose alapú felhasználói felület:** Az alkalmazás UI/UX tervezése Jetpack Compose-on keresztül történik, amely támogatja a vizuális komponensek pontos és strukturált elrendezését.
 - **Külső API integráció:** Az API használatával az alkalmazás állatfajok és fajták beazonosítását végzi, valamint érdekes tényeket ("Facts about pets") nyújt a felhasználóknak az állatokról. Az **API-k kizárólag információs célokat szolgálnak, nincs adatfeldolgozás vagy adatmentés.**
 
 #### Operációs rendszer:
@@ -198,7 +199,7 @@ Az alkalmazásban **nincs használatban vásárolt szoftverkomponens**. Az alkal
 ### 7. Architekturális terv
 
 #### Architekturális minta:
-Az alkalmazás **MVC (Model-View-Controller)** architektúrát követ, ahol a **Model** az adatkezelést és üzleti logikát, a **View** az XML-alapú felhasználói interfészt, a **Controller** pedig a kettő közötti kapcsolatot kezeli. Ez biztosítja a logikai és a megjelenítési rétegek elkülönítését.
+Az alkalmazás **MVC (Model-View-Controller)** architektúrát követ, ahol a **Model** az adatkezelést és üzleti logikát, a **View** a Jetpack Compose-alapú felhasználói interfészt, a **Controller** pedig a kettő közötti kapcsolatot kezeli. Ez biztosítja a logikai és a megjelenítési rétegek elkülönítését.
 
 #### Az alkalmazás rétegei és komponensei:
 1. **Model (Adatkezelés és üzleti logika):**
@@ -206,7 +207,7 @@ Az alkalmazás **MVC (Model-View-Controller)** architektúrát követ, ahol a **
    - Az API integrációk kezelésére szolgál (pl. fajta beazonosítás).
    
 2. **View (Felhasználói interfész):**
-   - Kotlin alapú fejlesztés XML felülettel Android Studio környezetben.
+   - Kotlin alapú fejlesztés Jetpack Compose felülettel Android Studio környezetben.
    - A Model-ben tárolt adatokat jeleníti meg és biztosítja az interakciókat.
 
 3. **Controller (Vezérlés):**
@@ -235,7 +236,7 @@ Az üzleti logika osztályai kezelik a felhasználói interakciók által kezdem
 - **API szinkronizáció:** Adatok lekérése és szinkronizálása az API-val.
 
 #### Kliensoldal osztályai:
-A kliensoldali logika Kotlinban íródik, XML-alapú felhasználói felülettel. A kliensoldali osztályok felelősek a felhasználói interakciók kezeléséért és a nézet frissítéséért. Főbb komponensek:
+A kliensoldali logika Kotlinban íródik, Jetpack Compose-alapú felhasználói felülettel. A kliensoldali osztályok felelősek a felhasználói interakciók kezeléséért és a nézet frissítéséért. Főbb komponensek:
 - **Activity-k és Fragment-ek:** Az alkalmazás fő felhasználói felületeit kezelik, kapcsolatban állnak a ViewModel-ekkel az adatok megjelenítéséhez.
 - **ViewModel-ek:** Elkülönítik a felhasználói felületet az adatkezeléstől, biztosítva az adatok megfelelő kezelését a lifecycle-hez igazítva.
 - **Adapterek és RecyclerView-ok:** Az adatok listázásáért és megjelenítéséért felelnek, például a kisállatok adatainak megjelenítésénél.
