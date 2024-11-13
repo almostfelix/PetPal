@@ -8,4 +8,5 @@
     <color name="black_icon">#2D2D2D</color>
     <color name="white">#FFFFFFFF</color>
     <color name="text_color_dark">#000000</color>
+    <color name="shadow">#a1a1a1</color>
 </resources>
