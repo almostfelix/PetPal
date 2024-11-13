@@ -1,22 +1,17 @@
-package com.example.jetpackcomposetest
+package com.petpal
 
 import android.graphics.BlurMaskFilter
-import android.graphics.BlurMaskFilter.Blur.NORMAL
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.OverscrollEffect
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,62 +21,65 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.jetpackcomposetest.ui.theme.JetpackComposeTestTheme
-import com.example.jetpackcomposetest.tools.customOverscroll
+import com.petpal.db.Pet
+import com.petpal.db.PetViewModel
+import com.petpal.ui.theme.JetpackComposeTestTheme
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.draw.shadow
 
 class MainActivity : ComponentActivity() {
+
+    private val petViewModel: PetViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        /*
+        Log.d("Debug", "onCreate")
+        val newPet = Pet(
+            name = "Rex",
+            species = "Dog",
+            breed = "Labrador",
+            birthDate = "2020-05-10",
+            allergies = listOf("Peanuts")
+        )
+        petViewModel.addPet(newPet)
+        */
+
+        var pets = petViewModel.fetchPets()
+        Log.d("Debug", "Pets: $pets")
+
         setContent {
             JetpackComposeTestTheme {
                 // Set up NavController
@@ -116,10 +114,16 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     composable("main_screen") {
-                        MainScreen(navController = navController) // Main Screen
+                        MainScreen(navController = navController, viewModel = petViewModel) // Main Screen
                     }
                     composable("settings_screen") {
                         SettingsScreen(navController = navController) // Settings Screen
+                    }
+                    composable("add_pet_screen") {
+                        AddNewPetScreen(
+                            navController = navController,
+                            petViewModel
+                        ) // Settings Screen
                     }
                 }
             }
@@ -129,12 +133,25 @@ class MainActivity : ComponentActivity() {
     @Preview(showBackground = true, name = "MainScreenPreview")
     @Composable
     fun MainScreenPreview() {
+        // Mock data for preview
         val navController = rememberNavController()
-        MainScreen(navController = navController)
-    }
+        val pets = listOf(
+            Pet(
+                name = "Max",
+                species = "Labrador",
+                breed = "Labrador",
+                birthDate = "2020-05-10",
+                allergies = listOf("Peanuts")
+            ),
+            Pet(
+                name = "Bella",
+                species = "Golden Retriever",
+                breed = "Retriever",
+                birthDate = "2019-04-16",
+                allergies = listOf("None")
+            ),
+        )
 
-    @Composable
-    fun MainScreen(navController: NavController) {
         JetpackComposeTestTheme {
             Column(
                 modifier = Modifier
@@ -143,13 +160,32 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Top
             ) {
                 TopAppBarMainScreen(navController = navController)
-                MainScreenBody()
+                MainScreenBody(pets = pets)
+            }
+        }
+    }
+
+
+    @Composable
+    fun MainScreen(navController: NavController, viewModel: PetViewModel) {
+        // Observe petsList with observeAsState
+        val petsListState = viewModel.petsList.observeAsState(initial = emptyList())
+        val petsList = petsListState.value
+        JetpackComposeTestTheme {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = colorResource(id = R.color.bg)),
+                verticalArrangement = Arrangement.Top
+            ) {
+                TopAppBarMainScreen(navController = navController)
+                MainScreenBody(pets = petsList)
             }
         }
     }
 
     @Composable
-    fun MainScreenBody() {
+    fun MainScreenBody(pets: List<Pet>) {
 
         Box(
             modifier = Modifier
@@ -163,11 +199,9 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                CardMainScreen()
-                CardMainScreen()
-                CardMainScreen()
-                CardMainScreen()
-                CardMainScreen()
+                for (pet in pets) {
+                    CardMainScreen(pet)
+                }
             }
         }
 
@@ -190,12 +224,12 @@ class MainActivity : ComponentActivity() {
                     .align(Alignment.CenterStart),
                 tint = Color.Unspecified
             )
-
+            /*
             // Center the Card in the Box
             Card(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .width(180.dp)
+                    .width(200.dp)
                     .height(42.dp),
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -228,7 +262,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 }
-            }
+            }*/
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -243,7 +277,8 @@ class MainActivity : ComponentActivity() {
                         .align(Alignment.CenterVertically),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                    shape = RoundedCornerShape(25.dp)
+                    shape = RoundedCornerShape(25.dp),
+                    onClick = { navController.navigate("add_pet_screen") }
                 ) {
                     Box(
                         modifier = Modifier
@@ -272,7 +307,7 @@ class MainActivity : ComponentActivity() {
                         .align(Alignment.CenterVertically)
                         .clickable { navController.navigate("settings_screen") },
                     colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp, pressedElevation = 0.dp),
                     shape = RoundedCornerShape(25.dp)
                 ) {
                     Box(
@@ -297,7 +332,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun CardMainScreen() {
+    fun CardMainScreen(pet: Pet) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -337,7 +372,7 @@ class MainActivity : ComponentActivity() {
                                     horizontalArrangement = Arrangement.Start,
                                 ) {
                                     Text(
-                                        text = "Max",
+                                        text = pet.name,
                                         fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                     )
                                 }
@@ -345,7 +380,7 @@ class MainActivity : ComponentActivity() {
                                     horizontalArrangement = Arrangement.Start,
                                 ) {
                                     Text(
-                                        text = "Labrador",
+                                        text = pet.species,
                                         fontSize = 12.sp,
                                     )
                                 }
@@ -468,7 +503,6 @@ class MainActivity : ComponentActivity() {
             frameworkPaint.maskFilter = null
         }
     }
-
 
 
 }

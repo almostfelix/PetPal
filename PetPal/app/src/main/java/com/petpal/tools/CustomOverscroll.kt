@@ -1,4 +1,4 @@
-package com.example.jetpackcomposetest.tools
+package com.petpal.tools
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing

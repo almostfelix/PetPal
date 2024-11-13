@@ -1,4 +1,4 @@
-package com.example.jetpackcomposetest
+package com.petpal
 
 import org.junit.Test
 
