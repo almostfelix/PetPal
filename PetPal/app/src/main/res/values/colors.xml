@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="text_color_dark">#000000</color>
     <color name="shadow">#a1a1a1</color>
+    <color name="disabled">#717171</color>
+    <color name="black">#000000</color>
+    <color name="g_blue">#4285F4</color>
 </resources>

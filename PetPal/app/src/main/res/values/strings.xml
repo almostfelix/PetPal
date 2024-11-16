@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">JetpackComposeTest</string>
+    <string name="app_name">PetPal</string>
+    <string name="pet_name">Pet Name</string>
+    <string name="species">Species</string>
+    <string name="breed">Breed</string>
+    <string name="date_of_birth">Date Of Birth</string>
+    <string name="allergies">Allergies (optional)</string>
+    <string name="new_pet_title">New Pet</string>
+    <string name="add_pet_btn">Save</string>
 </resources>

@@ -1,58 +1,46 @@
 package com.petpal.db
 
+import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
-class PetViewModel : ViewModel() {
+class PetViewModel(context: Context) : ViewModel() {
 
-    private val firebaseHelper = FirebaseHelper()
+    private val roomDB = RoomDB(context)
 
-    val petsList = MutableLiveData<List<Pet>>()
-    val errorMessage = MutableLiveData<String>()
-    val successMessage = MutableLiveData<String>()
+    private val _petsList = MutableLiveData<List<Pet>>()
+    val petsList: LiveData<List<Pet>> = _petsList
 
-    // Add a new pet to the database
-    fun addPet(pet: Pet) {
-        firebaseHelper.addNewPet(pet, onSuccess = {
-            successMessage.value = "Pet added successfully with ID: $it"
-        }, onFailure = {
-            errorMessage.value = it
-        })
+    // Function to load all pets (suspending function)
+    fun loadPets() {
+        viewModelScope.launch {
+            _petsList.value = roomDB.getPets()  // Fetch pets from RoomDB
+        }
     }
 
-    // Fetch all pets from Firebase
-    fun fetchPets() {
-        firebaseHelper.fetchAllPets(onSuccess = { pets ->
-            petsList.value = pets
-        }, onFailure = {
-            errorMessage.value = it
-        })
+    fun addNewPet(pet: Pet) {
+        viewModelScope.launch {
+            roomDB.getLastPet()?.let {
+                pet.id = it.id + 1
+            }
+            roomDB.addPet(pet)  // This call is now inside a coroutine
+            loadPets()
+        }
     }
 
-    // Fetch a specific pet by ID
-    fun fetchPetById(petId: String) {
-        firebaseHelper.fetchPetById(petId, onSuccess = { pet ->
-            petsList.value = listOf(pet) // Display the specific pet
-        }, onFailure = {
-            errorMessage.value = it
-        })
+    suspend fun getPetById(id: Int): Pet? {
+        return roomDB.getPet(id)
     }
 
-    // Add a medical record for a specific pet
-    fun addMedicalRecord(petId: String, record: MedicalRecord) {
-        firebaseHelper.addMedicalRecord(petId, record, onSuccess = {
-            successMessage.value = "Medical record added successfully"
-        }, onFailure = {
-            errorMessage.value = it
-        })
+    suspend fun getAllPets(): List<Pet> {
+        return roomDB.getPets()
     }
 
-    // Delete a pet from Firebase
-    fun deletePet(petId: String) {
-        firebaseHelper.deletePet(petId, onSuccess = {
-            successMessage.value = "Pet deleted successfully"
-        }, onFailure = {
-            errorMessage.value = it
-        })
+    suspend fun removePet(id: Int) {
+        roomDB.deletePet(id)
     }
 }
+

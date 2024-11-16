@@ -2,86 +2,66 @@ package com.petpal.db
 
 import android.util.Log
 import com.google.firebase.database.*
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class FirebaseHelper {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance("https://petpal-beb4e-default-rtdb.europe-west1.firebasedatabase.app")
     private val petsRef: DatabaseReference = database.getReference("pets")
 
-    // Add new Pet to Firebase
-    fun addNewPet(pet: Pet, onSuccess: (String) -> Unit, onFailure: (String) -> Unit) {
-        val petId = petsRef.push().key
-        Log.d("FirebaseHelper", "Generated pet ID: $petId")
-        petId?.let {
-            petsRef.child(it).setValue(pet).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    onSuccess(it) // Return the petId on success
+    // Save pet to Firebase Realtime Database
+    suspend fun savePet(pet: Pet) = suspendCancellableCoroutine<Unit> { continuation ->
+        petsRef.child(pet.id.toString()).setValue(pet)
+            .addOnSuccessListener {
+                continuation.resume(Unit)
+            }
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
+    }
+
+    // Get pet from Firebase by id
+    suspend fun getPet(id: Int): Pet? = suspendCancellableCoroutine { continuation ->
+        petsRef.child(id.toString()).get()
+            .addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    val pet = snapshot.getValue(Pet::class.java)
+                    continuation.resume(pet)
                 } else {
-                    onFailure("Failed to add pet: ${task.exception?.message}")
+                    continuation.resume(null) // Pet not found
                 }
             }
-        } ?: onFailure("Failed to generate pet ID")
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
     }
 
-    // Fetch all Pets from Firebase
-    fun fetchAllPets(onSuccess: (List<Pet>) -> Unit, onFailure: (String) -> Unit) {
-        petsRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val petsList = mutableListOf<Pet>()
-                for (petSnapshot in snapshot.children) {
-                    val pet = petSnapshot.getValue(Pet::class.java)
-                    pet?.let { petsList.add(it) }
+    // Get all pets from Firebase
+    suspend fun getPets(): List<Pet> = suspendCancellableCoroutine { continuation ->
+        petsRef.get()
+            .addOnSuccessListener { snapshot ->
+                val pets = mutableListOf<Pet>()
+                for (childSnapshot in snapshot.children) {
+                    val pet = childSnapshot.getValue(Pet::class.java)
+                    pet?.let { pets.add(it) }
                 }
-                onSuccess(petsList)
+                continuation.resume(pets)
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                onFailure("Failed to fetch pets: ${error.message}")
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
             }
-        })
     }
 
-    // Fetch a specific pet by its ID
-    fun fetchPetById(petId: String, onSuccess: (Pet) -> Unit, onFailure: (String) -> Unit) {
-        petsRef.child(petId).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val pet = snapshot.getValue(Pet::class.java)
-                if (pet != null) {
-                    onSuccess(pet)
-                } else {
-                    onFailure("Pet not found")
-                }
+    // Delete pet from Firebase
+    suspend fun deletePet(id: Int) = suspendCancellableCoroutine<Unit> { continuation ->
+        petsRef.child(id.toString()).removeValue()
+            .addOnSuccessListener {
+                continuation.resume(Unit)
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                onFailure("Failed to fetch pet: ${error.message}")
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
             }
-        })
-    }
-
-    // Update Pet's medical record
-    fun addMedicalRecord(petId: String, medicalRecord: MedicalRecord, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        val medicalRecordsRef = petsRef.child(petId).child("medicalRecords")
-        val recordId = medicalRecordsRef.push().key
-        recordId?.let {
-            medicalRecordsRef.child(it).setValue(medicalRecord).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    onSuccess()
-                } else {
-                    onFailure("Failed to add medical record: ${task.exception?.message}")
-                }
-            }
-        } ?: onFailure("Failed to generate medical record ID")
-    }
-
-    // Delete Pet from Firebase
-    fun deletePet(petId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        petsRef.child(petId).removeValue().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                onSuccess()
-            } else {
-                onFailure("Failed to delete pet: ${task.exception?.message}")
-            }
-        }
     }
 }
