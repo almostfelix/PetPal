@@ -31,7 +31,7 @@ import com.petpal.tools.PreferenceManager
 
 
 @Composable
-fun LoginScreen(navController: NavController, preferenceManager: PreferenceManager) {
+fun LoginScreen(preferenceManager: PreferenceManager, onGoogleSignInClick: () -> Unit, onLocalSignInClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -80,8 +80,7 @@ fun LoginScreen(navController: NavController, preferenceManager: PreferenceManag
             // Cloud Save Option
             Button(
                 onClick = {
-                    navController.navigate("main_screen")
-                    preferenceManager.setSaveMethod("cloud")
+                    onGoogleSignInClick()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -125,8 +124,7 @@ fun LoginScreen(navController: NavController, preferenceManager: PreferenceManag
             // Local Save Option
             Button(
                 onClick = {
-                    preferenceManager.setSaveMethod("local")
-                    navController.navigate("main_screen")
+                    onLocalSignInClick()
                 },
                 modifier = Modifier
                     .fillMaxWidth()

@@ -1,5 +1,6 @@
 package com.petpal
 
+import android.content.Intent
 import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
@@ -60,6 +61,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.shadow
 import androidx.lifecycle.ViewModelProvider
 import com.petpal.db.PetViewModelFactory
+import com.petpal.login.LoginActivity
 import com.petpal.tools.PreferenceManager
 import com.petpal.ui.LoginScreen
 import com.petpal.ui.MainScreen
@@ -103,11 +105,7 @@ class MainActivity : ComponentActivity() {
                 // Set up NavController
                 val navController = rememberNavController()
                 // Determine start destination based on saved preference
-                val startDestination = if (preferenceManager.getSaveMethod() == "NOT SET") {
-                    "login_screen"
-                } else {
-                    "main_screen"
-                }
+                val startDestination = "main_screen"
                 NavHost(
                     navController = navController,
                     startDestination = startDestination,
@@ -136,12 +134,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) {
-                    composable("login_screen") {
-                        LoginScreen(
-                            navController = navController,
-                            preferenceManager = preferenceManager
-                        )
-                    }
                     composable("main_screen") {
                         MainScreen(
                             navController = navController,
