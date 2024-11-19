@@ -36,12 +36,12 @@ import com.petpal.db.Event
 
 @Composable
 fun EventCard(events: List<Event>) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+        verticalArrangement = Arrangement.spacedBy(16.dp), // Spacing between cards
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         events.forEach { event ->
             Card(
