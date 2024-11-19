@@ -184,7 +184,7 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Top
             ) {
                 TopAppBarMainScreen(navController = navController)
-                MainScreenBody(pets = pets)
+                MainScreenBody(pets = pets, navController = navController)
             }
         }
     }
