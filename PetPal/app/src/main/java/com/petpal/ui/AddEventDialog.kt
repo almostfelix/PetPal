@@ -153,7 +153,7 @@ fun AddEventDialog(
                                 val datePickerDialog = DatePickerDialog(
                                     context,
                                     { _, year, month, dayOfMonth ->
-                                        date = "$dayOfMonth/${month + 1}/$year"
+                                        date = "$year-${month + 1}-$dayOfMonth"
                                     },
                                     calendar.get(Calendar.YEAR),
                                     calendar.get(Calendar.MONTH),
@@ -170,12 +170,6 @@ fun AddEventDialog(
                             )
                         ) {
                             Text(if (date.isEmpty()) "Select Date" else date)
-                            Icon(
-                                painter = painterResource(id = R.drawable.outline_calendar_month_32),
-                                contentDescription = "Calendar Icon",
-                                tint = colorResource(id = R.color.bg),
-                                modifier = Modifier.size(24.dp)
-                            )
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -195,7 +189,13 @@ fun AddEventDialog(
                                 )
                                 timePickerDialog.show()
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonColors(
+                                containerColor = colorResource(id = R.color.prim),
+                                contentColor = colorResource(id = R.color.bg),
+                                disabledContainerColor = colorResource(id = R.color.prim),
+                                disabledContentColor = colorResource(id = R.color.bg),
+                            )
                         ) {
                             Text(if (time.isEmpty()) "Select Time" else time)
                         }
@@ -206,7 +206,13 @@ fun AddEventDialog(
                         Box(modifier = Modifier.fillMaxWidth()) {
                             Button(
                                 onClick = { expanded = !expanded },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonColors(
+                                    containerColor = colorResource(id = R.color.prim),
+                                    contentColor = colorResource(id = R.color.bg),
+                                    disabledContainerColor = colorResource(id = R.color.prim),
+                                    disabledContentColor = colorResource(id = R.color.bg),
+                                )
                             ) {
                                 Text(if (type.isEmpty()) "Select Type" else type)
                             }
