@@ -1,5 +1,6 @@
 <resources>
     <string name="web_client_id">9954664403-5jddfub6itbdn47r5av6ltfnt61c12be.apps.googleusercontent.com</string>
+    <string name="add_pet">Add Pet</string>
     <string name="app_name">PetPal</string>
     <string name="pet_name">Pet Name</string>
     <string name="species">Species</string>
