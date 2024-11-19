@@ -67,6 +67,10 @@ import com.petpal.ui.LoginScreen
 import com.petpal.ui.MainScreen
 import com.petpal.ui.MainScreenBody
 import com.petpal.ui.TopAppBarMainScreen
+import com.petpal.ui.settings.AccountSettings
+import com.petpal.ui.settings.ApperearanceSettings
+import com.petpal.ui.settings.NotifSettings
+import com.petpal.ui.settings.PrivacySettings
 
 class MainActivity : ComponentActivity() {
 
@@ -149,6 +153,20 @@ class MainActivity : ComponentActivity() {
                             petViewModel = petViewModel
                         )
                     }
+                    composable("settings/account_settings") {
+                        AccountSettings(navController = navController)
+
+                    }
+                    composable("settings/appear_settings") {
+                        ApperearanceSettings(navController = navController)
+                    }
+                    composable("settings/notif_settings") {
+                        NotifSettings(navController = navController)
+                    }
+                    composable("settings/privacy_settings") {
+                        PrivacySettings(navController = navController)
+                    }
+
                 }
             }
         }

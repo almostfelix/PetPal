@@ -72,7 +72,7 @@ fun SettingsScreen(navController: NavController) {
                 SettingsCategory(
                     title = "Account Information",
                     icon = R.drawable.baseline_account_circle_32,
-                    onClick = { navController.navigate("settings/account_inf") }
+                    onClick = { navController.navigate("settings/account_settings") }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -83,7 +83,7 @@ fun SettingsScreen(navController: NavController) {
                 SettingsCategory(
                     title = "Notifications",
                     icon = R.drawable.baseline_circle_notifications_32,
-                    onClick = { navController.navigate("settings/notif") }
+                    onClick = { navController.navigate("settings/notif_settings") }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
@@ -94,7 +94,7 @@ fun SettingsScreen(navController: NavController) {
                 SettingsCategory(
                     title = "Appearance",
                     icon = R.drawable.baseline_brush_32,
-                    onClick = { navController.navigate("settings/appear") }
+                    onClick = { navController.navigate("settings/appear_settings") }
 
                 )
                 HorizontalDivider(
@@ -105,7 +105,7 @@ fun SettingsScreen(navController: NavController) {
                 SettingsCategory(
                     title = "Privacy and Security",
                     icon = R.drawable.baseline_gpp_good_32,
-                    onClick = { navController.navigate("setting/privacy_security") }
+                    onClick = { navController.navigate("settings/privacy_settings") }
                 )
             }
         }
