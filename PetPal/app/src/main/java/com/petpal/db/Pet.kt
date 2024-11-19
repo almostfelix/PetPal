@@ -13,5 +13,13 @@ data class Pet(
     val birthDate: String = "",
     val imageUrl: String? = null,
     val allergies: List<String>? = null,
-    val medicalRecords: List<MedicalRecord> = emptyList()
+    val events: List<Event> = emptyList()
+)
+
+data class Event(
+    val title: String = "",
+    val description: String = "",
+    val date: String = "",
+    val time: String = "",
+    val type: String = ""
 )

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="bg">#fefefe</color>
-    <color name="prim">#99B4FF</color>
+    <color name="prim">#007aff</color>
     <color name="prim_sec">#DDE6FF</color>
     <color name="accent">#FFDDFA</color>
     <color name="accent_dark">#FF99F0</color>

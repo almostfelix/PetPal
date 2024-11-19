@@ -14,10 +14,22 @@ class PetViewModel(context: Context) : ViewModel() {
     private val _petsList = MutableLiveData<List<Pet>>()
     val petsList: LiveData<List<Pet>> = _petsList
 
+    private val _pet = MutableLiveData<Pet>()
+    val pet: LiveData<Pet> = _pet
+
+    private val _eventsList = MutableLiveData<List<Event>>()
+    val eventsList: LiveData<List<Event>> = _eventsList
+
     // Function to load all pets (suspending function)
     fun loadPets() {
         viewModelScope.launch {
             _petsList.value = roomDB.getPets()  // Fetch pets from RoomDB
+        }
+    }
+
+    fun getPet(id: Int){
+        viewModelScope.launch {
+            _pet.value = roomDB.getPet(id)
         }
     }
 
@@ -41,6 +53,27 @@ class PetViewModel(context: Context) : ViewModel() {
 
     suspend fun removePet(id: Int) {
         roomDB.deletePet(id)
+    }
+
+
+    fun loadEventsForPet(petId: Int) {
+        viewModelScope.launch {
+            _eventsList.value = roomDB.getEventsForPet(petId)
+        }
+    }
+
+    fun addEventToPet(petId: Int, event: Event) {
+        viewModelScope.launch {
+            roomDB.addEventToPet(petId, event)
+            loadEventsForPet(petId)
+        }
+    }
+
+    fun removeEventFromPet(petId: Int, event: Event) {
+        viewModelScope.launch {
+            roomDB.removeEventFromPet(petId, event)
+            loadEventsForPet(petId)
+        }
     }
 }
 

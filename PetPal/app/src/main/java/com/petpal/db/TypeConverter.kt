@@ -29,4 +29,19 @@ class Converters {
         val listType = object : TypeToken<List<String>>() {}.type
         return Gson().fromJson(value, listType) // Converts the JSON string back to List<String>
     }
+
+    @TypeConverter
+    fun fromEventList(events: List<Event>?): String {
+        return Gson().toJson(events) // Convert the list to JSON
+    }
+
+    @TypeConverter
+    fun toEventList(eventsString: String?): List<Event> {
+        return if (eventsString.isNullOrEmpty()) {
+            emptyList()
+        } else {
+            val type = object : TypeToken<List<Event>>() {}.type
+            Gson().fromJson(eventsString, type) // Convert JSON back to a list
+        }
+    }
 }

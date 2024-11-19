@@ -33,4 +33,29 @@ class RoomDB(context: Context) {
             appDatabase.petDao().deletePet(it)
         }
     }
+
+
+    // Add event to a specific pet
+    suspend fun addEventToPet(petId: Int, event: Event) {
+        val pet = getPet(petId)
+        pet?.let {
+            // Convert existing events from JSON string to list of Event objects
+            val updatedEvents = it.events.toMutableList().apply { add(event) }
+            // Convert list back to JSON string
+            val updatedPet = it.copy(events = updatedEvents)
+            appDatabase.petDao().updatePet(updatedPet)
+        }
+    }
+
+    suspend fun getEventsForPet(petId: Int): List<Event> {
+        return getPet(petId)?.events ?: emptyList()
+    }
+
+    suspend fun removeEventFromPet(petId: Int, event: Event) {
+        val pet = getPet(petId)
+        pet?.let {
+            val updatedEvents = it.events.filter { it != event }
+            appDatabase.petDao().updatePetEvents(petId, updatedEvents)
+        }
+    }
 }

@@ -4,11 +4,13 @@ import android.content.Intent
 import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -60,18 +62,22 @@ import com.petpal.ui.theme.JetpackComposeTestTheme
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.shadow
 import androidx.lifecycle.ViewModelProvider
+import com.petpal.db.Event
 import com.petpal.db.PetViewModelFactory
 import com.petpal.login.LoginActivity
 import com.petpal.tools.PreferenceManager
 import com.petpal.ui.LoginScreen
 import com.petpal.ui.MainScreen
 import com.petpal.ui.MainScreenBody
+import com.petpal.ui.PetUi
 import com.petpal.ui.TopAppBarMainScreen
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var petViewModel: PetViewModel
+    lateinit var selectedPet: Pet
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -79,6 +85,16 @@ class MainActivity : ComponentActivity() {
         val factory = PetViewModelFactory(applicationContext)
         petViewModel = ViewModelProvider(this, factory)[PetViewModel::class.java]
         petViewModel.loadPets()
+
+
+        /*val newPet = Pet(
+            name = "Rex",
+            species = "Dog",
+            breed = "Labrador",
+            birthDate = "2020-05-10",
+            allergies = listOf("Peanuts")
+        )
+        petViewModel.addNewPet(newPet)*/
 
         val preferenceManager = PreferenceManager(applicationContext)
 
@@ -99,7 +115,6 @@ class MainActivity : ComponentActivity() {
 
         //var pets = petViewModel.fetchPets()
         //Log.d("Debug", "Pets: $pets")
-
         setContent {
             JetpackComposeTestTheme {
                 // Set up NavController
@@ -149,6 +164,10 @@ class MainActivity : ComponentActivity() {
                             petViewModel = petViewModel
                         )
                     }
+                    composable("pet_ui_screen") {
+                        Log.d("Debug", "Pets: ${petViewModel.petsList.value}")
+                        petViewModel.petsList.value?.let { it1 -> PetUi(navController = navController, pet = it1[0]) }
+                    }
                 }
             }
         }
@@ -184,7 +203,7 @@ class MainActivity : ComponentActivity() {
                 verticalArrangement = Arrangement.Top
             ) {
                 TopAppBarMainScreen(navController = navController)
-                MainScreenBody(pets = pets)
+                MainScreenBody(pets = pets, navController = navController)
             }
         }
     }

@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,13 +59,13 @@ fun MainScreen(navController: NavController, viewModel: PetViewModel) {
             verticalArrangement = Arrangement.Top
         ) {
             TopAppBarMainScreen(navController = navController)
-            MainScreenBody(pets = petsList)
+            MainScreenBody(pets = petsList, navController = navController)
         }
     }
 }
 
 @Composable
-fun MainScreenBody(pets: List<Pet>) {
+fun MainScreenBody(pets: List<Pet>, navController: NavController) {
 
     Box(
         modifier = Modifier
@@ -79,7 +80,7 @@ fun MainScreenBody(pets: List<Pet>) {
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             for (pet in pets) {
-                CardMainScreen(pet)
+                CardMainScreen(pet, navController = navController)
             }
         }
     }
@@ -211,7 +212,7 @@ fun TopAppBarMainScreen(navController: NavController) {
 }
 
 @Composable
-fun CardMainScreen(pet: Pet) {
+fun CardMainScreen(pet: Pet, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -222,6 +223,7 @@ fun CardMainScreen(pet: Pet) {
             modifier = Modifier
                 .width(350.dp)
                 .height(235.dp),
+            onClick = { navController.navigate("pet_ui_screen") },
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {

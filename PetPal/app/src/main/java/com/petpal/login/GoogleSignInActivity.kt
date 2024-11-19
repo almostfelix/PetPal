@@ -42,6 +42,7 @@ class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //preferenceManager.setSaveMethod("NOT SET")
 
         if (preferenceManager.getSaveMethod() != "NOT SET") {
             val intent = Intent(this, MainActivity::class.java)
@@ -114,7 +115,7 @@ class LoginActivity : ComponentActivity() {
     }
 
     private fun localSignIn() {
-        preferenceManager.setSaveMethod("Local")
+        preferenceManager.setSaveMethod("local")
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish() // Close LoginActivity
@@ -122,7 +123,7 @@ class LoginActivity : ComponentActivity() {
 
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
-            preferenceManager.setSaveMethod("Cloud")
+            preferenceManager.setSaveMethod("cloud")
             // Successfully signed in, navigate to the main activity
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

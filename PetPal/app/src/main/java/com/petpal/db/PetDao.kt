@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface PetDao {
@@ -22,4 +23,10 @@ interface PetDao {
 
     @Delete
     suspend fun deletePet(pet: Pet)
+
+    @Update
+    suspend fun updatePet(pet: Pet)
+
+    @Query("UPDATE pet SET events = :events WHERE id = :id")
+    suspend fun updatePetEvents(id: Int, events: List<Event>)
 }
