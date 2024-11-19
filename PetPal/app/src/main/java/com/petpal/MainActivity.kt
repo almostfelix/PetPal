@@ -4,11 +4,13 @@ import android.content.Intent
 import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -66,6 +68,7 @@ import com.petpal.tools.PreferenceManager
 import com.petpal.ui.LoginScreen
 import com.petpal.ui.MainScreen
 import com.petpal.ui.MainScreenBody
+import com.petpal.ui.PetUi
 import com.petpal.ui.TopAppBarMainScreen
 import com.petpal.ui.settings.AccountSettings
 import com.petpal.ui.settings.ApperearanceSettings
@@ -76,6 +79,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var petViewModel: PetViewModel
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -165,6 +169,10 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("settings/privacy_settings") {
                         PrivacySettings(navController = navController)
+                    }
+                    composable("pet_ui_screen") {
+                        Log.d("Debug", "Pets: ${petViewModel.petsList.value}")
+                        petViewModel.petsList.value?.let { it1 -> PetUi(navController = navController, pet = it1[0], petViewModel = petViewModel) }
                     }
 
                 }

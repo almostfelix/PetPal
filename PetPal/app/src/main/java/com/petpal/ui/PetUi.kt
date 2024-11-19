@@ -51,11 +51,12 @@ import androidx.navigation.NavController
 import com.petpal.R
 import com.petpal.db.Event
 import com.petpal.db.Pet
+import com.petpal.db.PetViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PetUi(navController: NavController, pet: Pet) {
+fun PetUi(navController: NavController, pet: Pet, petViewModel: PetViewModel) {
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Column(
@@ -76,7 +77,7 @@ fun PetUi(navController: NavController, pet: Pet) {
             context = context,
             onDismissRequest = { showDialog = false },
             onConfirm = { title, description, date, time, type ->
-                // Handle the event addition logic here
+                petViewModel.addEventToPet(pet.id, Event(title, description, date, time, type))
                 showDialog = false
             }
         )
@@ -240,5 +241,4 @@ fun UpperNavigationBar() {
         }
     }
 }
-
 
