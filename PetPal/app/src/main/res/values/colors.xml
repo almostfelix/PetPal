@@ -12,4 +12,5 @@
     <color name="disabled">#717171</color>
     <color name="black">#000000</color>
     <color name="g_blue">#4285F4</color>
+    <color name="error_red">#ff9494</color>
 </resources>

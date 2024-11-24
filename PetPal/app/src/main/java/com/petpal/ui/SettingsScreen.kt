@@ -1,4 +1,4 @@
-package com.petpal
+package com.petpal.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.petpal.R
 import com.petpal.ui.theme.JetpackComposeTestTheme
 
 @Composable

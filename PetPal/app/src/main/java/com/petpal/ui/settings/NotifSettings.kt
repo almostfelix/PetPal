@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.petpal.R
-import com.petpal.SettingsCategory
+import com.petpal.ui.SettingsCategory
 
 @Composable
 fun NotifSettings(navController: NavController) {
