@@ -4,9 +4,13 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.graphics.RenderEffect.createBlurEffect
 import android.graphics.Shader
+import android.net.Uri
 import android.util.Log
 import android.widget.DatePicker
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -33,9 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.petpal.R
 import com.petpal.db.Pet
 import com.petpal.db.PetViewModel
+import com.petpal.tools.ImagePickerLauncher
+import com.petpal.tools.ImageUtils
 import java.util.Calendar
 
 
@@ -59,6 +68,7 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
     val petBreed = remember { mutableStateOf("") }
     val petBirthDate = remember { mutableStateOf("") }
     val petAllergies = remember { mutableStateOf("") }
+    val thumnnail = remember { mutableStateOf("") }
 
     // Track validity of each field
     val isPetNameValid = remember { mutableStateOf(true) }
@@ -67,6 +77,25 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
     val isPetBirthDateValid = remember { mutableStateOf(true) }
 
     val currentContext = LocalContext.current
+
+    var selectedImages = remember { mutableStateOf(emptyList<Uri>()) }
+
+    // Initialize the image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { result: List<Uri>? ->
+        result?.let {
+            if (it.isNotEmpty()) {
+                selectedImages.value = it
+                Log.d("Image Selected", "Selected Images: ${it.joinToString()}")
+                thumnnail.value = ImageUtils.saveImageToInternalStorage(currentContext, it[0]) ?: ""
+                Log.d("Image Selected", "Saved Image: $thumnnail")
+            } else {
+                Log.d("Image Selected", "No image selected.")
+            }
+        }
+    }
+
 
     fun validateFields() {
         isPetNameValid.value = petName.value.isNotEmpty()
@@ -85,7 +114,8 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
                 species = petSpecies.value,
                 breed = petBreed.value,
                 birthDate = petBirthDate.value,
-                allergies = petAllergies.value.split(",").map { it.trim() }
+                allergies = petAllergies.value.split(",").map { it.trim()},
+                thumbnail = thumnnail.value
             )
             Log.d("AddNewPetScreen", "Adding new pet: $newPet")
             //preferenceManager.addPet(newPet)
@@ -361,6 +391,26 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
                     Text(text = stringResource(R.string.add_pet_btn))
                 }
                 Spacer(modifier = Modifier.height(32.dp))
+                Button(
+                    onClick = { imagePickerLauncher.launch("image/*") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 0.dp, 16.dp, 0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorResource(R.color.accent_dark),
+                    )
+                ) {
+                    Text(text = "Photo Picker")
+                }
+                AsyncImage(
+                    model = thumnnail.value,
+                    contentDescription = "Selected Pet Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.Crop
+                )
             }
         }
     }

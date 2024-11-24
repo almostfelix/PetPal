@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.Task
 import com.petpal.MainActivity
 import com.petpal.R
 import com.petpal.tools.PreferenceManager
+import com.petpal.tools.checkPermissions
 import com.petpal.ui.LoginScreen
 
 class LoginActivity : ComponentActivity() {

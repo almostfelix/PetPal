@@ -25,6 +25,7 @@ import com.petpal.ui.theme.JetpackComposeTestTheme
 import androidx.lifecycle.ViewModelProvider
 import com.petpal.db.PetViewModelFactory
 import com.petpal.tools.PreferenceManager
+import com.petpal.tools.checkPermissions
 import com.petpal.ui.AddNewPetScreen
 import com.petpal.ui.MainScreen
 import com.petpal.ui.MainScreenBody
@@ -40,7 +41,6 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var petViewModel: PetViewModel
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
         petViewModel.loadPets()
 
         val preferenceManager = PreferenceManager(applicationContext)
+
 
         //Log.d("Debug", petViewModel.getAllPets().toString())
 
@@ -73,8 +74,7 @@ class MainActivity : ComponentActivity() {
             JetpackComposeTestTheme {
                 // Set up NavController
                 val navController = rememberNavController()
-                // Determine start destination based on saved preference
-                val startDestination = "main_screen"
+                var startDestination = "main_screen"
                 NavHost(
                     navController = navController,
                     startDestination = startDestination,

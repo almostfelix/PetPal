@@ -43,6 +43,8 @@ android {
 
 dependencies {
 
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.room.ktx)
     kapt("androidx.room:room-compiler:2.6.1")
