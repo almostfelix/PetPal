@@ -134,9 +134,9 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
             }
 
             Icon(
-                painter = painterResource(id = R.drawable.baseline_brush_128),
+                painter = painterResource(id = R.drawable.logo_with_shadow_3),
                 contentDescription = "Add Pet",
-                tint = colorResource(id = R.color.accent),
+                tint = Color.Unspecified,
                 modifier = Modifier
                     .size(128.dp)
                     .align(Alignment.Center)
@@ -147,12 +147,12 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(50.dp, 50.dp, 0.dp, 0.dp),
+            shape = RoundedCornerShape(32.dp, 32.dp, 0.dp, 0.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f)),
         ){
             Card(
                 modifier = Modifier
-                    .padding(8.dp),
+                    .padding(8.dp, 32.dp, 8.dp, 0.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             ) {
                 Column(

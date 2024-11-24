@@ -1,8 +1,10 @@
 package com.petpal.ui
 
+import android.content.Intent
 import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,16 +38,21 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.petpal.R
 import com.petpal.db.Pet
 import com.petpal.db.PetViewModel
+import com.petpal.login.LoginActivity
+import com.petpal.tools.OnSaveMethodCompleteListener
+import com.petpal.tools.PreferenceManager
 import com.petpal.ui.theme.JetpackComposeTestTheme
 
 @Composable
@@ -89,6 +96,7 @@ fun MainScreenBody(pets: List<Pet>, navController: NavController) {
 
 @Composable
 fun TopAppBarMainScreen(navController: NavController) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -158,7 +166,7 @@ fun TopAppBarMainScreen(navController: NavController) {
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
                 shape = RoundedCornerShape(25.dp),
-                onClick = { navController.navigate("add_pet_screen") }
+                onClick = { navController.navigate("add_pet_screen")}
             ) {
                 Box(
                     modifier = Modifier

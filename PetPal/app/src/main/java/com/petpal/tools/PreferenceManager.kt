@@ -14,8 +14,12 @@ class PreferenceManager(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-    fun setSaveMethod(method: String) {
+    // Modified method to accept a callback
+    fun setSaveMethod(method: String, callback: OnSaveMethodCompleteListener?) {
         sharedPreferences.edit().putString(KEY_SAVE_METHOD, method).apply()
+
+        // Notify the listener that the operation is complete
+        callback?.onSaveMethodComplete()
     }
 
     fun getSaveMethod(): String {
