@@ -127,7 +127,8 @@ fun SettingsScreen(navController: NavController) {
                     SettingItem(
                         title = "Log Out",
                         icon = R.drawable.baseline_logout_32,
-                        onClick = { preferenceManager.setSaveMethod("local",null) },
+                        onClick = { preferenceManager.setSaveMethod("local",null)
+                                  navController.popBackStack()},
                         textcolor = R.color.g_red,
                         iconcolor = Color.Red
                     )

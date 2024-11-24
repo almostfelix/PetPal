@@ -134,55 +134,89 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
     ) {
         Box(
             modifier = Modifier
-                .padding(16.dp)
                 .fillMaxWidth()
                 .weight(1f),
         ){
-            Card(
+            AsyncImage(
+                model = thumnnail.value,
+                contentDescription = "Selected Pet Image",
                 modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp),
-                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 8.dp,
-                    pressedElevation = 0.dp
-                ),
-                shape = RoundedCornerShape(25.dp),
-                onClick = { navController.popBackStack() }
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    .fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
+            Box(
+                modifier = Modifier.padding(8.dp).align(Alignment.TopStart),
+            ){
+                Card(
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(40.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 0.dp
+                    ),
+                    shape = RoundedCornerShape(25.dp),
+                    onClick = { navController.popBackStack() }
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_arrow_back_32),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.black_icon),
-                        modifier = Modifier.size(32.dp)
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_arrow_back_32),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.black_icon),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
                 }
+
             }
 
-            Icon(
-                painter = painterResource(id = R.drawable.logo_with_shadow_3),
-                contentDescription = "Add Pet",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .size(128.dp)
-                    .align(Alignment.Center)
-            )
+            Box(
+                modifier = Modifier.padding(8.dp).align(Alignment.TopEnd),
+            ){
+                Card(
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(40.dp),
+                    colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 0.dp
+                    ),
+                    shape = RoundedCornerShape(25.dp),
+                    onClick = { imagePickerLauncher.launch("image/*") }
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_image_32),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.black_icon),
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
+
+            }
+
+
         }
 
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            shape = RoundedCornerShape(32.dp, 32.dp, 0.dp, 0.dp),
+            shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.8f)),
         ){
             Card(
                 modifier = Modifier
-                    .padding(8.dp, 32.dp, 8.dp, 0.dp),
+                    .padding(8.dp, 32.dp, 8.dp, 16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             ) {
                 Column(
@@ -377,7 +411,7 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
                 }
 
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = { addPet() },
@@ -390,27 +424,7 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
                 ) {
                     Text(text = stringResource(R.string.add_pet_btn))
                 }
-                Spacer(modifier = Modifier.height(32.dp))
-                Button(
-                    onClick = { imagePickerLauncher.launch("image/*") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp, 0.dp, 16.dp, 0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.accent_dark),
-                    )
-                ) {
-                    Text(text = "Photo Picker")
-                }
-                AsyncImage(
-                    model = thumnnail.value,
-                    contentDescription = "Selected Pet Image",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .clip(RoundedCornerShape(16.dp)),
-                    contentScale = ContentScale.Crop
-                )
+
             }
         }
     }

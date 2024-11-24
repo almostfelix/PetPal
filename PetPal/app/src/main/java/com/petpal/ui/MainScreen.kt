@@ -302,6 +302,13 @@ fun CardMainScreen(pet: Pet, navController: NavController) {
                                 shadowRight = false
                             ),
                     ) {
+                        AsyncImage(
+                        model = pet.thumbnail,
+                        contentDescription = "Selected Pet Image",
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
 
                     }
                 }
