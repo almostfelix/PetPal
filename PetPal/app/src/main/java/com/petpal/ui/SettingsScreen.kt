@@ -1,5 +1,7 @@
 package com.petpal.ui
 
+import android.content.Intent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -8,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -15,10 +18,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.petpal.R
+import com.petpal.login.LoginActivity
+import com.petpal.tools.OnSaveMethodCompleteListener
+import com.petpal.tools.PreferenceManager
 import com.petpal.ui.theme.JetpackComposeTestTheme
 
 @Composable
 fun SettingsScreen(navController: NavController) {
+    val context = LocalContext.current
+    val preferenceManager = PreferenceManager(context)
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -108,6 +117,36 @@ fun SettingsScreen(navController: NavController) {
                     icon = R.drawable.baseline_gpp_good_32,
                     onClick = { navController.navigate("settings/privacy_settings") }
                 )
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    thickness = 1.dp,
+                    color = colorResource(id = R.color.shadow)
+                )
+
+                if(preferenceManager.getSaveMethod() == "cloud")
+                    SettingItem(
+                        title = "Log Out",
+                        icon = R.drawable.baseline_logout_32,
+                        onClick = { preferenceManager.setSaveMethod("local",null) },
+                        textcolor = R.color.g_red,
+                        iconcolor = Color.Red
+                    )
+                else{
+                    SettingItem(
+                        title = "Log in",
+                        icon = R.drawable.baseline_login_32,
+                        onClick = { PreferenceManager(context).setSaveMethod("NOT SET", object :
+                            OnSaveMethodCompleteListener {
+                            override fun onSaveMethodComplete() {
+                                // The callback code to be executed when saving is complete
+                                context.startActivity(Intent(context, LoginActivity::class.java))
+                            }
+                        }) },
+                        textcolor = R.color.g_blue,
+                        iconcolor = colorResource(id = R.color.g_blue)
+                    )
+                }
+
             }
         }
     }
@@ -146,8 +185,34 @@ fun SettingsCategory(title: String, icon: Int, onClick: () -> Unit) {
     }
 }
 
+@Composable
+fun SettingItem(title: String, icon: Int, onClick: () -> Unit, textcolor : Int, iconcolor : Color) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 8.dp),
 
+    ) {
+        Row(modifier = Modifier.align(Alignment.CenterStart)) {
 
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = title,
+                tint = iconcolor,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = title,
+                color = colorResource(id = textcolor),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun SettingsScreenPreview() {
