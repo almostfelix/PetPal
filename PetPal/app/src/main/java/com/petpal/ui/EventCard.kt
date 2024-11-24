@@ -1,6 +1,7 @@
 package com.petpal.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -39,10 +42,12 @@ fun EventCard(events: List<Event>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .background(color = colorResource(id = R.color.bg))
+            .padding(16.dp, 0.dp, 16.dp, 16.dp), // Add padding to the column
         verticalArrangement = Arrangement.spacedBy(16.dp), // Spacing between cards
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        //Spacer(modifier = Modifier.height(500.dp))
         events.forEach { event ->
             Card(
                 modifier = Modifier

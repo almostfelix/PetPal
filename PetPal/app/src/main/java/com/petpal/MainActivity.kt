@@ -172,7 +172,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("pet_ui_screen") {
                         Log.d("Debug", "Pets: ${petViewModel.petsList.value}")
-                        petViewModel.petsList.value?.let { it1 -> PetUi(navController = navController, pet = it1[0], petViewModel = petViewModel) }
+                        petViewModel.petsList.value?.let { it1 -> PetUi(navController = navController, petId = it1[0].id, petViewModel = petViewModel) }
                     }
 
                 }

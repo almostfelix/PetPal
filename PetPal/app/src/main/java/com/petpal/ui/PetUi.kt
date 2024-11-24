@@ -18,7 +18,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
@@ -33,12 +37,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -47,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.petpal.R
 import com.petpal.db.Event
@@ -54,9 +61,10 @@ import com.petpal.db.Pet
 import com.petpal.db.PetViewModel
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PetUi(navController: NavController, pet: Pet, petViewModel: PetViewModel) {
+fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) {
+    val petsList by petViewModel.petsList.observeAsState(emptyList())
+    val currentPet = petsList.find { it.id == petId }
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Column(
@@ -65,11 +73,35 @@ fun PetUi(navController: NavController, pet: Pet, petViewModel: PetViewModel) {
             .background(colorResource(id = R.color.bg))
             .padding(16.dp),
     ) {
-        TopAppBarPetUiScreen()
+        TopAppBarPetUiScreen(navController)
         UpperNavigationBar()
-        CalendarScreen(pet.events)
-        AddEventBtn{ showDialog = true }
-        EventCard(pet.events)
+        currentPet?.let { pet ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item {
+                    CalendarScreen(
+                        petId = pet.id,
+                        pets = petsList,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp)
+                            .padding(16.dp)
+                    )
+                }
+
+                item {
+                    AddEventBtn { showDialog = true }
+                }
+                item {
+                    EventCard(pet.events) // Pass the specific pet's events
+                }
+                // Add more items if needed
+            }
+
+
+        }
     }
 
     if (showDialog) {
@@ -77,7 +109,7 @@ fun PetUi(navController: NavController, pet: Pet, petViewModel: PetViewModel) {
             context = context,
             onDismissRequest = { showDialog = false },
             onConfirm = { title, description, date, time, type ->
-                petViewModel.addEventToPet(pet.id, Event(title, description, date, time, type))
+                petViewModel.addEventToPet(petId, Event(title, description, date, time, type))
                 showDialog = false
             }
         )
@@ -86,7 +118,7 @@ fun PetUi(navController: NavController, pet: Pet, petViewModel: PetViewModel) {
 
 
 @Composable
-fun TopAppBarPetUiScreen() {
+fun TopAppBarPetUiScreen(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,14 +131,14 @@ fun TopAppBarPetUiScreen() {
         Card(
             modifier = Modifier
                 .width(40.dp)
-                .height(40.dp)
-                .clickable { },
+                .height(40.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 8.dp,
                 pressedElevation = 0.dp
             ),
-            shape = RoundedCornerShape(25.dp)
+            shape = RoundedCornerShape(25.dp),
+            onClick = { navController.popBackStack() }
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -150,14 +182,14 @@ fun TopAppBarPetUiScreen() {
         Card(
             modifier = Modifier
                 .width(40.dp)
-                .height(40.dp)
-                .clickable { },
+                .height(40.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 8.dp,
                 pressedElevation = 0.dp
             ),
-            shape = RoundedCornerShape(25.dp)
+            shape = RoundedCornerShape(25.dp),
+            onClick = {  }
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),

@@ -11,6 +11,10 @@ class RoomDB(context: Context) {
         appDatabase.petDao().addPet(pet)
     }
 
+    suspend fun updatePet(pet: Pet) {
+        appDatabase.petDao().updatePet(pet)
+    }
+
     // Get a specific pet by id from the local database
     suspend fun getPet(id: Int): Pet? {
         return appDatabase.petDao().getPet(id)

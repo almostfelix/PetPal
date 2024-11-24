@@ -1,5 +1,6 @@
 package com.petpal.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,19 +20,25 @@ fun AddEventBtn(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-    ) {
-        Button(
-            onClick = { onClick() },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonColors(
-                containerColor = colorResource(id = R.color.prim),
-                contentColor = colorResource(id = R.color.bg),
-                disabledContainerColor = colorResource(id = R.color.prim),
-                disabledContentColor = colorResource(id = R.color.bg),
-            ),
+            .background(colorResource(id = R.color.bg))
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp, 0.dp, 16.dp, 16.dp),
         ) {
-            Text("Add Event")
+            Button(
+                onClick = { onClick() },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonColors(
+                    containerColor = colorResource(id = R.color.prim),
+                    contentColor = colorResource(id = R.color.bg),
+                    disabledContainerColor = colorResource(id = R.color.prim),
+                    disabledContentColor = colorResource(id = R.color.bg),
+                ),
+            ) {
+                Text("Add Event")
+            }
         }
     }
 }

@@ -85,10 +85,10 @@ fun AddEventDialog(
     var date by remember { mutableStateOf("") }
     var time by remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+    var isGeneral by remember { mutableStateOf(true) }
 
     Dialog(
-        onDismissRequest = { onDismissRequest() }
+        onDismissRequest = {  }
     ) {
         Box(
             modifier = Modifier
@@ -149,17 +149,15 @@ fun AddEventDialog(
                         // Date Selector
                         Button(
                             onClick = {
-                                val calendar = Calendar.getInstance()
-                                val datePickerDialog = DatePickerDialog(
-                                    context,
-                                    { _, year, month, dayOfMonth ->
-                                        date = "$year-${month + 1}-$dayOfMonth"
-                                    },
-                                    calendar.get(Calendar.YEAR),
-                                    calendar.get(Calendar.MONTH),
-                                    calendar.get(Calendar.DAY_OF_MONTH)
-                                )
-                                datePickerDialog.show()
+                                val c = Calendar.getInstance()
+                                val year = c.get(Calendar.YEAR)
+                                val month = c.get(Calendar.MONTH)
+                                val day = c.get(Calendar.DAY_OF_MONTH)
+
+                                val dpd = DatePickerDialog(context, { view, year, monthOfYear, dayOfMonth ->
+                                    date = "$year-${monthOfYear + 1}-$dayOfMonth"
+                                }, year, month, day)
+                                dpd.show()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonColors(
@@ -169,7 +167,7 @@ fun AddEventDialog(
                                 disabledContentColor = colorResource(id = R.color.bg),
                             )
                         ) {
-                            Text(if (date.isEmpty()) "Select Date" else date)
+                            Text("Select Date")
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
@@ -177,17 +175,14 @@ fun AddEventDialog(
                         // Time Selector
                         Button(
                             onClick = {
-                                val calendar = Calendar.getInstance()
-                                val timePickerDialog = TimePickerDialog(
-                                    context,
-                                    { _, hourOfDay, minute ->
-                                        time = String.format("%02d:%02d", hourOfDay, minute)
-                                    },
-                                    calendar.get(Calendar.HOUR_OF_DAY),
-                                    calendar.get(Calendar.MINUTE),
-                                    true
-                                )
-                                timePickerDialog.show()
+                                val c = Calendar.getInstance()
+                                val hour = c.get(Calendar.HOUR_OF_DAY)
+                                val minute = c.get(Calendar.MINUTE)
+
+                                val tpd = TimePickerDialog(context, { view, hourOfDay, minute ->
+                                    time = String.format("%02d:%02d", hourOfDay, minute)
+                                }, hour, minute, true)
+                                tpd.show()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonColors(
@@ -197,44 +192,36 @@ fun AddEventDialog(
                                 disabledContentColor = colorResource(id = R.color.bg),
                             )
                         ) {
-                            Text(if (time.isEmpty()) "Select Time" else time)
+                            Text("Select Time")
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // Type Selector
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Button(
-                                onClick = { expanded = !expanded },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonColors(
-                                    containerColor = colorResource(id = R.color.prim),
-                                    contentColor = colorResource(id = R.color.bg),
-                                    disabledContainerColor = colorResource(id = R.color.prim),
-                                    disabledContentColor = colorResource(id = R.color.bg),
-                                )
-                            ) {
-                                Text(if (type.isEmpty()) "Select Type" else type)
-                            }
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("General") },
-                                    onClick = {
-                                        type = "General"
-                                        expanded = false
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Hospital") },
-                                    onClick = {
-                                        type = "Hospital"
-                                        expanded = false
-                                    }
-                                )
-                            }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            SelectableCard(
+                                text = "General",
+                                isSelected = isGeneral,
+                                onClick = { isGeneral = true },
+                                modifier = Modifier.weight(1f),
+                                selectedColor = colorResource(id = R.color.prim),
+                                unselectedColor = colorResource(id = R.color.bg),
+                                selectedTextColor = colorResource(id = R.color.bg),
+                                unselectedTextColor = colorResource(id = R.color.prim),
+                                borderColor = colorResource(id = R.color.prim)
+                            )
+                            SelectableCard(
+                                text = "Medical",
+                                isSelected = !isGeneral,
+                                onClick = { isGeneral = false },
+                                modifier = Modifier.weight(1f),
+                                selectedColor = colorResource(id = R.color.prim),
+                                unselectedColor = colorResource(id = R.color.bg),
+                                selectedTextColor = colorResource(id = R.color.bg),
+                                unselectedTextColor = colorResource(id = R.color.prim),
+                                borderColor = colorResource(id = R.color.prim)
+                            )
                         }
                     }
 
@@ -247,14 +234,25 @@ fun AddEventDialog(
                     ) {
                         Button(
                             onClick = { onDismissRequest() },
-                            modifier = Modifier.padding(end = 8.dp)
-                        ) {
+                            modifier = Modifier.padding(end = 8.dp),
+                            colors = ButtonColors(
+                                containerColor = colorResource(id = R.color.prim),
+                                contentColor = colorResource(id = R.color.bg),
+                                disabledContainerColor = colorResource(id = R.color.prim),
+                                disabledContentColor = colorResource(id = R.color.bg),
+                            )
+                        ){
                             Text("Cancel")
                         }
-                        Button(onClick = {
-                            onConfirm(title, description, date, time, type)
-                            onDismissRequest()
-                        }) {
+                        Button(
+                            onClick = { onConfirm(title, description, date, time, type) },
+                            colors = ButtonColors(
+                                containerColor = colorResource(id = R.color.prim),
+                                contentColor = colorResource(id = R.color.bg),
+                                disabledContainerColor = colorResource(id = R.color.prim),
+                                disabledContentColor = colorResource(id = R.color.bg),
+                            )
+                        ){
                             Text("Add")
                         }
                     }

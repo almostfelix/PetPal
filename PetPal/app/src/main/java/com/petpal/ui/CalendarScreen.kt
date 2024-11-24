@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,14 +44,22 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.petpal.R
 import com.petpal.db.Event
+import com.petpal.db.Pet
 
-@RequiresApi(Build.VERSION_CODES.O)
+
+@Preview
 @Composable
-fun CalendarScreen(events: List<Event>) {
+fun CalendarPreview() {
+    CalendarScreen(1, listOf( Pet(1, name = "Test", events = listOf(Event("Test", "Test", "Test", "2024-11-20", "Test")))), Modifier.fillMaxWidth())
+}
+
+@Composable
+fun CalendarScreen(petId: Int, pets: List<Pet>, modifier: Modifier) {
     // Correct initialization of currentMonth using mutableStateOf
     val currentMonth = remember { mutableStateOf(YearMonth.now()) }
 
@@ -62,18 +71,18 @@ fun CalendarScreen(events: List<Event>) {
     val currentDate = LocalDate.now()
 
     // Example event (you can add logic to fetch events dynamically)
-    val event = Event(
+    /*val event = Event(
         title = "test",
         description = "test",
         date = "2024-11-20",
         type = "test"
-    )
+    )*/
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = modifier) {
         // Month and Year Header
         Box(
             modifier = Modifier
-                .height(40.dp)
+                .wrapContentHeight()
                 .fillMaxWidth()
         ) {
             // Row for the month and year text
@@ -142,9 +151,9 @@ fun CalendarScreen(events: List<Event>) {
         }
 
         // Weekday Headers
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { day ->
-                Text(text = day, color = colorResource(R.color.disabled))
+                Text(text = day, color = colorResource(R.color.disabled), modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
             }
         }
 
@@ -152,12 +161,13 @@ fun CalendarScreen(events: List<Event>) {
 
         // Days of the Month
         LazyVerticalGrid(
+            userScrollEnabled = false,
             columns = GridCells.Fixed(7), // 7 columns for the days of the week
             modifier = Modifier.fillMaxWidth(),
             content = {
                 // Empty cells for days before the first day of the month
                 items(firstDayOfWeek) {
-                    Box(modifier = Modifier.size(40.dp))
+                    Box(modifier = Modifier.size(32.dp))
                 }
 
                 // Actual days of the month
@@ -166,18 +176,18 @@ fun CalendarScreen(events: List<Event>) {
                     val dayString = LocalDate.of(currentMonth.value.year, currentMonth.value.month, day).toString()
 
                     // Check if this day has an event
-                    val eventForDay = events.find { it.date == dayString }
+                    val eventForDay = pets.find { it.id == petId }?.events?.find { it.date == dayString }
                     Log.d("CalendarScreen", "Event for day $dayString: $eventForDay")
 
                     Box(
                         modifier = Modifier
-                            .size(40.dp) // Outer box size
+                            .size(32.dp) // Outer box size
                             .clip(CircleShape), // Clip the outer box to a circle
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(40.dp) // Outer box size
+                                .size(32.dp) // Outer box size
                                 .clip(CircleShape) // Clip the outer box to a circle
                                 /*.border(
                                     width = 3.dp,

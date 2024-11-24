@@ -64,8 +64,15 @@ class PetViewModel(context: Context) : ViewModel() {
 
     fun addEventToPet(petId: Int, event: Event) {
         viewModelScope.launch {
-            roomDB.addEventToPet(petId, event)
-            loadEventsForPet(petId)
+            // Update the database
+            val pet = roomDB.getPet(petId) // Fetch the pet from the database
+            pet?.let {
+                val updatedPet = it.copy(events = it.events + event) // Add the new event
+                roomDB.updatePet(updatedPet) // Save the updated pet back to the database
+            }
+
+            // Reload the pets list to reflect changes in LiveData
+            _petsList.value = roomDB.getPets()
         }
     }
 
