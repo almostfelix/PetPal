@@ -18,28 +18,30 @@ A **PetPal** alkalmazás célja, hogy átfogó platformot biztosítson a kisáll
    - Borbély Félix
    - Nagy Gergely
 - **Tesztelők:** A funkciók és az egész alkalmazás tesztelése a minőség biztosítására.
-   - TODO
+   - Juhász Dominik
+   - Pelyák Zolt
+   - Ribár Krisztián
 
 ### Mérföldkövek
 
 1. **Projektindítás (Kick-off meeting):** A projekt hivatalos indulása, ahol a projekt céljait, szerepköreit és a kommunikációs folyamatokat tisztázzuk.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-10-06
    - **Felelős:** Projektvezető
 
 2. **Követelményspecifikáció elfogadása:** A megrendelő által jóváhagyott és véglegesített követelményspecifikáció, amely a fejlesztés alapját képezi.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-10-21
    - **Felelős:** Projektvezető
 
 3. **Funkcionális tervezés lezárása:** Az összes funkcionális követelményről elkészült specifikációk elfogadása, beleértve a képernyőterveket és a használati eseteket.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-10-21
    - **Felelős:** UX/UI Designer
 
 4. **Architekturális terv véglegesítése:** A technikai megoldásokat, rétegzett architektúrát és az alkalmazott technológiai eszközöket tartalmazó terv elfogadása.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-11-11
    - **Felelős:** Fejlesztők, Projekvezető
 
 5. **Fejlesztési szakasz indítása:** A fejlesztők megkezdik az implementációt az elfogadott tervek alapján.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-11-11
    - **Felelős:** Fejlesztők
 
 6. **Alfa verzió kiadása:** Az első működőképes verzió, amely tartalmazza az alapfunkciókat. Ezt követi az elsődleges hibák azonosítása.
@@ -123,19 +125,16 @@ Az alkalmazás képes lesz a kisebb hibákat, adatbeviteli pontatlanságokat és
 #### 8. **Bővíthetőség / Flexibilitás**
 A rendszer tervezése során figyelmet fordítunk arra, hogy később könnyen bővíthető legyen, például új funkciókkal vagy modulokkal (pl. állat biztosítási modul, további kisállat típusok támogatása).
 
-#### ??? 9. **Újrahasznosíthatóság** ??? -> TODO
-A kódtervezés során törekedünk arra, hogy a logikai elemek és komponensek újra felhasználhatóak legyenek a jövőbeli projektekben. Ez segíti a fejlesztők hatékonyságát és csökkenti a fejlesztési költségeket.
-
-#### 10. **Kompatibilitás**
+#### 9. **Kompatibilitás**
 Az alkalmazás kompatibilis lesz különböző hardvereszközökkel és szoftverkörnyezetekkel.
 
-#### 11. **Könnyen megvásárolható vagy letölthető**
+#### 10. **Könnyen megvásárolható vagy letölthető**
 Az alkalmazás elérhető lesz a Google Play áruházban. A felhasználók számára egy egyszerű és gyors telepítési folyamatot biztosítunk, amely minimális beállítást igényel.
 
 ## 5. Funkcionális terv
 
 ### Rendszerszereplők:
-- **Felhasználók** (kisállattulajdonosok).
+- **Felhasználók** (kisállat tulajdonosok).
 
 ### Rendszerhasználati esetek:
 
@@ -166,7 +165,9 @@ Az alkalmazás elérhető lesz a Google Play áruházban. A felhasználók szám
      3. Az adatokat elmenti a jobb felső sarokban lévő mentés ikonnal, és a rendszer azonnal frissíti a kisállat profilját.
 
 ### Képernyőtervek:
----TODO---
+![Screenshot1](/Screenshots/PetPal1%20(Small).png)
+![Screenshot2](/Screenshots/PetPal2%20(Small).png)
+![Screenshot4](/Screenshots/PetPal4%20(Small).png)
 
 ### 6. Fizikai környezet
 
@@ -178,10 +179,12 @@ Az alkalmazásban **nincs használatban vásárolt szoftverkomponens**. Az alkal
 
 #### Hardver és hálózati topológia:
 - **Klienseszközök:** A célplatform elsősorban Android-alapú mobilkészülékek, amelyek támogatják a Kotlin-alapú alkalmazás futtatását.
-- **Internetkapcsolat:** Bár az alkalmazás az interneten keresztül API-kat használ az állatok fajának és fajtájának beazonosítására, valamint "Facts about pets" megjelenítésére, nincs szükség folyamatos internetkapcsolatra. Az adatok lokálisan kerülnek megjelenítésre, és az API használata csak az azonosítási funkciókhoz és a "Facts about pets" betöltésére szükséges.
+- **Internetkapcsolat:** Bár az alkalmazás az interneten keresztül API-kat használ az állatok fajának és fajtájának beazonosítására, adatokat tárol a  felhőben, valamint "Facts about pets" megjelenítésére, ennek ellenére nincs szükség folyamatos internetkapcsolatra. Az adatok lokálisan kerülnek megjelenítésre, és az API használata csak az azonosítási funkciókhoz és a "Facts about pets" betöltésére szükséges.
 
 #### Fizikai alrendszerek:
-- **Külső API-k:** Az alkalmazás **külső API-kat** használ kizárólag az állatfajok és fajták azonosításához, illetve "Facts about pets" megjelenítésére. Az API-k nem tárolnak adatokat, és nem történik adatfeldolgozás rajtuk keresztül. Az alkalmazás nem rendelkezik saját szerverrel vagy adatbázissal, az összes felhasználói adat helyben, az eszközön kerül mentésre.
+- **Külső API-k:** Az alkalmazás **külső API-kat** használ kizárólag az állatfajok és fajták azonosításához, illetve "Facts about pets" megjelenítésére. Az API-k nem tárolnak adatokat, és nem történik adatfeldolgozás rajtuk keresztül. A PetPal alkalmazás **adatkezelése kétféleképpen történik:**
+  - Lokális adatbázis
+  - Firebase adatbázis
   
 #### Fejlesztő eszközök:
 - **Fejlesztői környezet:** Az alkalmazás fejlesztése az **Android Studio** környezetben zajlik, amely a hivatalos Android fejlesztői eszköz.
@@ -199,26 +202,29 @@ Az alkalmazásban **nincs használatban vásárolt szoftverkomponens**. Az alkal
 ### 7. Architekturális terv
 
 #### Architekturális minta:
-Az alkalmazás **MVC (Model-View-Controller)** architektúrát követ, ahol a **Model** az adatkezelést és üzleti logikát, a **View** a Jetpack Compose-alapú felhasználói interfészt, a **Controller** pedig a kettő közötti kapcsolatot kezeli. Ez biztosítja a logikai és a megjelenítési rétegek elkülönítését.
+Az alkalmazás **MVVM (Model-View-ViewModel)** architektúrát követ, amely jól illeszkedik a Jetpack Compose keretrendszerhez, és biztosítja a különböző komponensek szoros, de elkülönített együttműködését. Ebben a struktúrában a **Model** felelős az adatok kezeléséért, a **View** a felhasználói interfészért, míg a **ViewModel** a kettő közötti adatátvitelt és logikai feldolgozást végzi, biztosítva az alkalmazás rugalmas működését.
 
 #### Az alkalmazás rétegei és komponensei:
-1. **Model (Adatkezelés és üzleti logika):**
+1. **Model (Adatkezelés):**
    - Lokálisan tárolja és kezeli a kisállatok egészségügyi adatait.
    - Az API integrációk kezelésére szolgál (pl. fajta beazonosítás).
+   - Kezeli az adatokat a helyi és Firebase adatbázisokban.
    
 2. **View (Felhasználói interfész):**
-   - Kotlin alapú fejlesztés Jetpack Compose felülettel Android Studio környezetben.
-   - A Model-ben tárolt adatokat jeleníti meg és biztosítja az interakciókat.
+   - Kotlin alapú fejlesztés Jetpack Compose segítségével Android Studio környezetben.
+   - A Model-ben tárolt adatokat jeleníti meg, és biztosítja az interakciókat.
+   - Az interaktív komponensek (pl. gombok, listák) a ViewModel segítségével frissülnek.
 
-3. **Controller (Vezérlés):**
-   - A felhasználói interakciókat továbbítja a Model réteg felé.
-   - Frissíti a View-t a Model módosításai alapján.
+3. **ViewModel (Vezérlés és adatkezelés):**
+   - A felhasználói interakciókat feldolgozza és továbbítja a Model réteg felé.
+   - Adatok frissítésével kapcsolatos logikai műveleteket végez, majd az eredményeket átadja a View-nak.
+   - A ViewModel biztosítja, hogy a UI és az üzleti logika (Model) ne legyenek közvetlenül összekapcsolva.
 
 #### Változások kezelése:
-Az MVC struktúra lehetővé teszi az egyes rétegek elkülönített fejlesztését és módosítását. Bármilyen felhasználói felület változtatás vagy logikai módosítás esetén csak a megfelelő réteget kell módosítani, anélkül hogy az egész rendszert érintené.
+Az MVVM struktúra lehetővé teszi az egyes rétegek különálló fejlesztését és módosítását. Az alkalmazás logikája (Model) és a felhasználói felület (View) között egy tiszta adatáramlás valósul meg a ViewModel-en keresztül. Bármilyen változtatás a felhasználói felületen vagy az üzleti logikában csak a megfelelő réteget érinti, minimalizálva a hibák kockázatát.
 
 #### Rendszer bővíthetősége:
-Az alkalmazás moduláris, így bővíthető új funkciókkal (pl. új egészségügyi modul). Az MVC felépítés miatt az új funkciókhoz elegendő az egyes komponensek kibővítése, anélkül hogy az egész rendszer architektúráját átalakítanánk.
+Az alkalmazás modularitása lehetővé teszi új funkciók egyszerű hozzáadását. Az MVVM struktúra miatt új funkciók hozzáadása a megfelelő réteg kibővítésével történhet anélkül, hogy az alkalmazás más részeit jelentősen módosítani kellene. Ez biztosítja a bővíthetőséget és a könnyű karbantartást.
 
 #### Biztonsági funkciók:
 A rendszer helyben tárol adatokat, és nem kezel érzékeny információkat. Az adatvédelemért az Android beépített biztonsági megoldásai felelnek, mivel az alkalmazás külső szerverrel nem kommunikál, és nincs adatfeldolgozás.
@@ -236,12 +242,22 @@ Az üzleti logika osztályai kezelik a felhasználói interakciók által kezdem
 - **API szinkronizáció:** Adatok lekérése és szinkronizálása az API-val.
 
 #### Kliensoldal osztályai:
-A kliensoldali logika Kotlinban íródik, Jetpack Compose-alapú felhasználói felülettel. A kliensoldali osztályok felelősek a felhasználói interakciók kezeléséért és a nézet frissítéséért. Főbb komponensek:
-- **Activity-k és Fragment-ek:** Az alkalmazás fő felhasználói felületeit kezelik, kapcsolatban állnak a ViewModel-ekkel az adatok megjelenítéséhez.
-- **ViewModel-ek:** Elkülönítik a felhasználói felületet az adatkezeléstől, biztosítva az adatok megfelelő kezelését a lifecycle-hez igazítva.
-- **Adapterek és RecyclerView-ok:** Az adatok listázásáért és megjelenítéséért felelnek, például a kisállatok adatainak megjelenítésénél.
 
-## 11. Tesztterv
+A kliensoldali logika Kotlinban íródik, Jetpack Compose-alapú felhasználói felülettel. A kliensoldali osztályok felelősek a felhasználói interakciók kezeléséért és a nézetek dinamikus frissítéséért. A főbb komponensek:
+
+- **Composables (Felhasználói felület elemek):** A felhasználói felület komponensei, mint például gombok, listák, űrlapok, amelyek az alkalmazás vizuális elemeit alkotják. Minden komponens önálló, és a ViewModel által kezelt adatokkal frissülnek.
+  
+- **ViewModel-ek:** A ViewModel-ek felelősek a felhasználói felület adatkezelésétől való elkülönítéséért. A ViewModel biztosítja az adatok kezelését és a megfelelő UI állapot frissítését, alkalmazkodva az Android lifecycle-hoz.
+
+- **State Management (Állapotkezelés):** A Jetpack Compose-ban az állapotkezelést a `remember`, `mutableStateOf`, vagy a `State` típusok biztosítják, amelyek segítségével a felhasználói felület dinamikusan frissíthető, amint az adatok megváltoznak a ViewModel-ben.
+
+- **LazyColumn és LazyRow:** A listák és görgethető elemek kezelésére használt komponensek, például a kisállatok adatainak megjelenítésére. Az ilyen típusú listák hatékonyan kezelik a nagy mennyiségű adatot, mivel csak a látható elemeket renderelik.
+
+- **Navigation:** A Jetpack Compose Navigation komponens segítségével történik az alkalmazás képernyői közötti navigálás. A navigációs logika a különböző képernyők közötti átmenetet kezeli a ViewModel adatai alapján.
+
+Ezek az elemek biztosítják, hogy az alkalmazás felhasználói felülete dinamikusan reagáljon az adatváltozásokra, miközben jól elkülöníti a logikát a megjelenítéstől.
+
+## 9. Tesztterv
 
 ### Egységtesztek
 Az egységtesztek célja a kritikus funkciók ellenőrzése, különös tekintettel a következő területekre:
