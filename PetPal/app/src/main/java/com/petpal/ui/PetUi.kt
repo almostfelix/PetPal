@@ -73,9 +73,10 @@ fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) 
             .background(colorResource(id = R.color.bg))
             .padding(16.dp),
     ) {
-        TopAppBarPetUiScreen(navController)
-        UpperNavigationBar()
         currentPet?.let { pet ->
+            TopAppBarPetUiScreen(navController, pet)
+            UpperNavigationBar()
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -118,7 +119,7 @@ fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) 
 
 
 @Composable
-fun TopAppBarPetUiScreen(navController: NavController) {
+fun TopAppBarPetUiScreen(navController: NavController, pet: Pet) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -170,7 +171,7 @@ fun TopAppBarPetUiScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Max",
+                    text = pet.name,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
                     maxLines = 1
@@ -189,7 +190,7 @@ fun TopAppBarPetUiScreen(navController: NavController) {
                 pressedElevation = 0.dp
             ),
             shape = RoundedCornerShape(25.dp),
-            onClick = {  }
+            onClick = { }
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),

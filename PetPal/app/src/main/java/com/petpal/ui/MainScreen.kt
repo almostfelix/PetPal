@@ -233,7 +233,7 @@ fun CardMainScreen(pet: Pet, navController: NavController) {
             modifier = Modifier
                 .width(350.dp)
                 .height(235.dp),
-            onClick = { navController.navigate("pet_ui_screen") },
+            onClick = { navController.navigate("pet_ui_screen/${pet.id}") },
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
@@ -271,7 +271,7 @@ fun CardMainScreen(pet: Pet, navController: NavController) {
                                 horizontalArrangement = Arrangement.Start,
                             ) {
                                 Text(
-                                    text = pet.species,
+                                    text = pet.breed,
                                     fontSize = 12.sp,
                                 )
                             }

@@ -131,9 +131,16 @@ class MainActivity : ComponentActivity() {
                     composable("settings/privacy_settings") {
                         PrivacySettings(navController = navController)
                     }
-                    composable("pet_ui_screen") {
-                        Log.d("Debug", "Pets: ${petViewModel.petsList.value}")
-                        petViewModel.petsList.value?.let { it1 -> PetUi(navController = navController, petId = it1[0].id, petViewModel = petViewModel) }
+                    composable("pet_ui_screen/{petId}") { backStackEntry ->
+                        val petId = backStackEntry.arguments?.getString("petId")?.toInt()
+                        Log.d("Debug", "Pet: $petId")
+                        petId?.let {
+                            PetUi(
+                                navController = navController,
+                                petId = petId,
+                                petViewModel = petViewModel
+                            )
+                        }
                     }
 
                 }
