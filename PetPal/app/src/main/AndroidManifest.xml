@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.petpal">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,7 +17,7 @@
         android:theme="@style/Theme.JetpackComposeTest"
         tools:targetApi="31">
         <activity
-            android:name=".tools.RequestPermissionsScreen"
+            android:name="com.smartdevices.petpal.tools.RequestPermissionsScreen"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.JetpackComposeTest">
@@ -28,8 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".login.LoginActivity" />
+        <activity android:name="com.smartdevices.petpal.MainActivity" />
+        <activity android:name="com.smartdevices.petpal.login.LoginActivity" />
     </application>
 
 </manifest>
