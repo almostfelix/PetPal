@@ -36,7 +36,7 @@ class LoginActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         //preferenceManager.setSaveMethod("NOT SET")
 
-        Log.d("Debug", preferenceManager.getSaveMethod())
+        Log.d(TAG, preferenceManager.getSaveMethod())
         if (preferenceManager.getSaveMethod() != "NOT SET") {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -59,6 +59,8 @@ class LoginActivity : ComponentActivity() {
             if (result.resultCode == RESULT_OK) {
                 val signInAccount = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 handleSignInResult(signInAccount)
+            }else{
+                Toast.makeText(this, "Google sign-in failed", Toast.LENGTH_SHORT).show()
             }
         }
 

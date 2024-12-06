@@ -84,7 +84,7 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
                     text = currentMonth.value.month.getDisplayName(
                         TextStyle.FULL,
                         Locale.getDefault()
-                    ) + " " + currentMonth.value.year,
+                    ).replaceFirstChar { it.uppercase() } + " " + currentMonth.value.year,
                     modifier = Modifier
                         .height(40.dp)
                         .wrapContentHeight(align = Alignment.CenterVertically)
@@ -177,6 +177,7 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
                         Box(
                             modifier = Modifier
                                 .size(32.dp) // Outer box size
+                                .padding(2.dp, 2.dp, 2.dp, 2.dp)
                                 .clip(CircleShape) // Clip the outer box to a circle
                                 /*.border(
                                     width = 3.dp,

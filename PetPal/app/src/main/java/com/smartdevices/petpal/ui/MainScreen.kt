@@ -41,6 +41,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -115,12 +116,12 @@ fun TopAppBarMainScreen(navController: NavController) {
                 .align(Alignment.CenterStart),
             tint = Color.Unspecified
         )
-        /*
+
         // Center the Card in the Box
         Card(
             modifier = Modifier
                 .align(Alignment.Center)
-                .width(200.dp)
+                .width(150.dp)
                 .height(42.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -153,7 +154,7 @@ fun TopAppBarMainScreen(navController: NavController) {
                     )
                 }
             }
-        }*/
+        }
         Row(
             modifier = Modifier
                 .fillMaxHeight()
