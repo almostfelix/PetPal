@@ -24,11 +24,7 @@ import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.AddNewPetScreen
 import com.smartdevices.petpal.ui.MainScreen
 import com.smartdevices.petpal.ui.PetUi
-import com.smartdevices.petpal.ui.SettingsScreen
-import com.smartdevices.petpal.ui.settings.AccountSettings
-import com.smartdevices.petpal.ui.settings.ApperearanceSettings
-import com.smartdevices.petpal.ui.settings.NotifSettings
-import com.smartdevices.petpal.ui.settings.PrivacySettings
+import com.smartdevices.petpal.ui.settings.SettingsScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -122,19 +118,7 @@ class MainActivity : ComponentActivity() {
                             petViewModel = petViewModel
                         )
                     }
-                    composable("settings/account_settings") {
-                        AccountSettings(navController = navController)
 
-                    }
-                    composable("settings/appear_settings") {
-                        ApperearanceSettings(navController = navController)
-                    }
-                    composable("settings/notif_settings") {
-                        NotifSettings(navController = navController)
-                    }
-                    composable("settings/privacy_settings") {
-                        PrivacySettings(navController = navController)
-                    }
                     composable("pet_ui_screen/{petId}") { backStackEntry ->
                         val petId = backStackEntry.arguments?.getString("petId")?.toInt()
                         Log.d("Debug", "Pet: $petId")
