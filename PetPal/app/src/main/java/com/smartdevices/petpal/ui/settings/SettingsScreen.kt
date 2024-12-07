@@ -115,7 +115,7 @@ fun SettingsScreen(navController: NavController) {
 
             }
             FillerText("Account", 16, 16)
-            if (preferenceManager.getSaveMethod() == "NOT SET") {
+            if (preferenceManager.getSaveMethod() == "local") {
 
                 Card(
                     modifier = Modifier
@@ -271,7 +271,7 @@ fun SettingsScreen(navController: NavController) {
 
                 }
             }
-            if (preferenceManager.getSaveMethod()!="cloud"){
+            if (preferenceManager.getSaveMethod()=="cloud"){
             Row(
                 modifier = Modifier.padding(16.dp).fillMaxWidth(), // Add padding around the row
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End, // Align the button at the end
