@@ -200,8 +200,8 @@ fun TopAppBarMainScreen(navController: NavController) {
                 modifier = Modifier
                     .width(40.dp)
                     .height(40.dp)
-                    .align(Alignment.CenterVertically)
-                    .clickable { navController.navigate("settings_screen") },
+                    .align(Alignment.CenterVertically),
+                onClick = { navController.navigate("settings_screen") },
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 8.dp,
