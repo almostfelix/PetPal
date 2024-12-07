@@ -43,6 +43,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.coil.compose)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.kotlinx.coroutines.android)

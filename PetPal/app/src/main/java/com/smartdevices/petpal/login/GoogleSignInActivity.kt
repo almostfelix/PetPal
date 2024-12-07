@@ -101,6 +101,14 @@ class LoginActivity : ComponentActivity() {
                     if (user != null) {
                         Log.d(TAG, "User id: ${user.uid}")
                         preferenceManager.setUUID(user.uid)
+                        user.let {
+                            preferenceManager.setUserName(it.displayName ?: "")
+                            preferenceManager.setUserEmail(it.email ?: "")
+                            preferenceManager.setUserPhoto(it.photoUrl.toString())
+                        }
+                        Log.d(TAG, "User name: ${preferenceManager.getUserName()}")
+                        Log.d(TAG, "User email: ${preferenceManager.getUserEmail()}")
+                        Log.d(TAG, "User photo: ${preferenceManager.getUserPhoto()}")
                     }
                     updateUI(user)
                 } else {

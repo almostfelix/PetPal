@@ -2,16 +2,23 @@ package com.smartdevices.petpal
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.smartdevices.petpal.db.PetViewModel
 import com.smartdevices.petpal.ui.theme.JetpackComposeTestTheme
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.petpal.R
 import com.smartdevices.petpal.db.PetViewModelFactory
 import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.AddNewPetScreen
@@ -22,22 +29,32 @@ import com.smartdevices.petpal.ui.settings.AccountSettings
 import com.smartdevices.petpal.ui.settings.ApperearanceSettings
 import com.smartdevices.petpal.ui.settings.NotifSettings
 import com.smartdevices.petpal.ui.settings.PrivacySettings
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var petViewModel: PetViewModel
+    private var keepSplashScreen = mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val splashscreen = installSplashScreen()
+        splashscreen.setKeepOnScreenCondition { keepSplashScreen.value }
+        val splashScreenView = findViewById<View>(android.R.id.content)
+        val fadeInAnimation = AnimationUtils.loadAnimation(this, R.anim.fade_in)
+        splashScreenView.startAnimation(fadeInAnimation)
 
         // Pass the factory with context
         val factory = PetViewModelFactory(applicationContext)
         petViewModel = ViewModelProvider(this, factory)[PetViewModel::class.java]
-        petViewModel.loadPets()
-        petViewModel.getThumbnails()
 
         val preferenceManager = PreferenceManager(applicationContext)
 
+        lifecycleScope.launch {
+            delay(100)
+            keepSplashScreen.value = false
+        }
 
         //Log.d("Debug", petViewModel.getAllPets().toString())
 

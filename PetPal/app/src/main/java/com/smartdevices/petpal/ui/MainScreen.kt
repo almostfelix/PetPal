@@ -37,6 +37,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -51,10 +52,13 @@ import com.petpal.R
 import com.smartdevices.petpal.db.Media
 import com.smartdevices.petpal.db.Pet
 import com.smartdevices.petpal.db.PetViewModel
+import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.theme.JetpackComposeTestTheme
 
 @Composable
 fun MainScreen(navController: NavController, viewModel: PetViewModel) {
+    viewModel.loadPets()
+    viewModel.getThumbnails()
     val thumbnailList: List<Media> by viewModel.thumbnails.collectAsState(initial = emptyList())
     val petsList: List<Pet> by viewModel.petsList.collectAsState(initial = emptyList())
     Log.d("Debug", thumbnailList.toString())
@@ -312,7 +316,8 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
                             contentDescription = "Selected Pet Image",
                             modifier = Modifier
                                 .fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
+                            placeholder = ColorPainter(colorResource(id = R.color.bg)),
                         )
 
                     }

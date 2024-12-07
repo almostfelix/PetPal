@@ -100,8 +100,7 @@ fun AddNewPetScreen(navController: NavController, petViewModel: PetViewModel) {
                 name = petName.value,
                 species = petSpecies.value,
                 breed = petBreed.value,
-                birthDate = petBirthDate.value,
-                allergies = petAllergies.value.split(",").map { it.trim()}
+                birthDate = petBirthDate.value
             )
             Log.d("AddNewPetScreen", "Adding new pet: $newPet")
             //preferenceManager.addPet(newPet)

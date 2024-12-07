@@ -1,0 +1,6 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/baseline_add_32">
+    <target
+        android:name="rotating_part"
+        android:animation="@animator/logo_animation"/>
+</animated-vector>

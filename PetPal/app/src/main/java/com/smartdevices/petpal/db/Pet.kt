@@ -11,17 +11,13 @@ data class Pet(
     val species: String = "",
     val breed: String = "",
     val birthDate: String = "",
-    val allergies: List<String>? = null,
-    val medicalInfo: MedicalInfo = MedicalInfo(),
+    val medicalInfo: MedicalInfo = MedicalInfo()
 )
 
 data class MedicalInfo(
-    val vaccinationStatus: String = "", // e.g., "Up to date"
-    val allergies: String = "", // e.g., "None" or "Peanuts"
-    val chronicConditions: String = "", // e.g., "Arthritis"
+    val allergies: List<String> = listOf(""), // e.g., "None" or "Peanuts"
     val diet: String = "", // e.g., "Grain-free"
     val weight: Double = 0.0, // Current weight in kilograms
-    val lastCheckupDate: String = "" // Date of the last general health checkup
 )
 data class MedicalEvent(
     val id: String = "", // Unique ID for the medical event

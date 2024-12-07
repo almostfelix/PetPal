@@ -9,6 +9,12 @@ class PreferenceManager(context: Context) {
         private const val PREF_NAME = "PetPalPreferences"
         private const val KEY_SAVE_METHOD = "save_method"
         private const val UUID = "uuid"
+        private const val USER_NAME = "user_name"
+        private const val USER_EMAIL = "user_email"
+        private const val USER_PHOTO = "user_photo"
+        private const val DEFAULT_NAME = ""
+        private const val DEFAULT_EMAIL = ""
+        private const val DEFAULT_PHOTO = ""
         private const val DEFAULT_UUID = "0"
         private const val DEFAULT_SAVE_METHOD = "NOT SET" // Default to "local"
     }
@@ -34,5 +40,29 @@ class PreferenceManager(context: Context) {
 
     fun getUUID(): String {
         return sharedPreferences.getString(UUID, DEFAULT_UUID) ?: DEFAULT_UUID
+    }
+
+    fun setUserName(userName: String) {
+        sharedPreferences.edit().putString(USER_NAME, userName).apply()
+    }
+
+    fun getUserName(): String {
+        return sharedPreferences.getString(USER_NAME, DEFAULT_NAME) ?: DEFAULT_NAME
+    }
+
+    fun setUserEmail(userEmail: String) {
+        sharedPreferences.edit().putString(USER_EMAIL, userEmail).apply()
+    }
+
+    fun getUserEmail(): String {
+        return sharedPreferences.getString(USER_EMAIL, DEFAULT_EMAIL) ?: DEFAULT_EMAIL
+    }
+
+    fun setUserPhoto(userPhoto: String) {
+        sharedPreferences.edit().putString(USER_PHOTO, userPhoto).apply()
+    }
+
+    fun getUserPhoto(): String {
+        return sharedPreferences.getString(USER_PHOTO, DEFAULT_PHOTO) ?: DEFAULT_PHOTO
     }
 }
