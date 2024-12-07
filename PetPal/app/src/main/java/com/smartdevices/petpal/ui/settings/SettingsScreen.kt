@@ -3,6 +3,7 @@ package com.smartdevices.petpal.ui.settings
 import android.content.Intent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -253,7 +254,7 @@ fun SettingsScreen(navController: NavController) {
                     .padding(16.dp)
                     .fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-                shape = RoundedCornerShape(12.dp), // Rounded corners
+                shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
             ) {
                 Column(
@@ -272,22 +273,35 @@ fun SettingsScreen(navController: NavController) {
                 }
             }
             if (preferenceManager.getSaveMethod()=="cloud"){
-            Row(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(), // Add padding around the row
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.End, // Align the button at the end
-                verticalAlignment = Alignment.CenterVertically // Vertically center the button in the row
+            Row( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                Card(
+                modifier = Modifier
+                    .padding(16.dp),
+
+                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+                shape = RoundedCornerShape(32.dp),
+                colors = CardDefaults.cardColors(colorResource(id = R.color.g_red))
             ) {
-                Button(onClick = { preferenceManager.setSaveMethod("local",null)
-                    navController.popBackStack()}, Modifier.height(40.dp).width(70.dp), shape = RoundedCornerShape(20.dp)) {
-                    // Icon on the left side of the text
+                Box(
+                    modifier = Modifier
+
+                        .padding(16.dp),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_logout_32),
                         contentDescription = null,
-                        tint = Color.White, // Icon color
-                        modifier = Modifier.size(24.dp) // Icon size
+                        tint = colorResource(id = R.color.bg), // Icon color
+                        modifier = Modifier
+                            .size(24.dp) // Icon size
+                            .clickable {
+                                preferenceManager.setSaveMethod("local", null)
+                                navController.popBackStack()
+                            }
                     )
                 }
-            }
+            }}
+
             }
 
         }
