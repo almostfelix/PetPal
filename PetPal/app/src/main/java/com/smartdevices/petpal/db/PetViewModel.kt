@@ -177,6 +177,17 @@ class PetViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun updateMedia(media: Media) {
+        viewModelScope.launch {
+            try {
+                roomDB.updateMedia(media)
+                loadMediaForPet(media.petId) // Refresh media
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
+    }
+
     fun deleteMedia(media: Media) {
         viewModelScope.launch {
             try {

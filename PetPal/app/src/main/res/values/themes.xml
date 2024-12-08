@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.JetpackComposeTest" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.JetpackComposeTest" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Customize your theme here -->
+    </style>
+
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <!-- Set the splash screen background, animated icon, and animation
-        duration. -->
+        <!-- Set the splash screen background, animated icon, and animation duration -->
         <item name="windowSplashScreenBackground">@color/bg</item>
 
-        <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated
-             drawable. One of these is required. -->
+        <!-- Use windowSplashScreenAnimatedIcon to add a drawable or an animated drawable -->
         <item name="windowSplashScreenAnimatedIcon">@drawable/logo_ai_small</item>
         <item name="splashScreenIconSize">80dp</item>
 
-        <!-- Set the theme of the Activity that directly follows your splash
-        screen. This is required. -->
+        <!-- Set the theme of the Activity that directly follows your splash screen -->
         <item name="postSplashScreenTheme">@style/Theme.JetpackComposeTest</item>
     </style>
 </resources>

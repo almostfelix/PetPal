@@ -49,6 +49,9 @@ interface PetDao {
     @Upsert
     suspend fun addMedia(media: Media)
 
+    @Update
+    suspend fun updateMedia(media: Media)
+
     @Delete
     suspend fun deleteEvent(event: Event)
 

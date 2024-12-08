@@ -9,5 +9,5 @@ data class Media(
     val mediaId: Int = 0,
     val petId: Int = 0,
     val type: String = "",
-    val url: String = ""
+    var url: String = ""
 )

@@ -4,6 +4,9 @@ import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,13 +33,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -48,12 +54,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.petpal.R
 import com.smartdevices.petpal.db.Media
 import com.smartdevices.petpal.db.Pet
 import com.smartdevices.petpal.db.PetViewModel
 import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.theme.JetpackComposeTestTheme
+import kotlin.math.min
 
 @Composable
 fun MainScreen(navController: NavController, viewModel: PetViewModel) {
@@ -297,7 +306,7 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp))
-                            .background(colorResource(id = R.color.prim))
+                            .background(Color.Transparent)
                             .innerShadow(
                                 color = Color.Black,
                                 cornersRadius = 0.dp,
@@ -311,6 +320,24 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
                                 shadowRight = false
                             ),
                     ) {
+                        val painter = rememberAsyncImagePainter(thumbnailList.find { it.petId == pet.petId }?.url ?: "")
+                        val state = painter.state
+
+                        val transition by animateFloatAsState(
+                            targetValue = if (state is AsyncImagePainter.State.Success) 1f else 0f,
+                            animationSpec = tween(durationMillis = 1000)
+                        )
+                        Image(
+                            painter = painter,
+                            contentDescription = "custom transition based on painter state",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .scale(.2f + (.8f * transition))
+                                .alpha(min(1f, transition / .2f))
+                        )
+
+                        /*
                         AsyncImage(
                             model = thumbnailList.find { it.petId == pet.petId }?.url ?: "",
                             contentDescription = "Selected Pet Image",
@@ -318,7 +345,7 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
                                 .fillMaxSize(),
                             contentScale = ContentScale.Crop,
                             placeholder = ColorPainter(colorResource(id = R.color.bg)),
-                        )
+                        )*/
 
                     }
                 }

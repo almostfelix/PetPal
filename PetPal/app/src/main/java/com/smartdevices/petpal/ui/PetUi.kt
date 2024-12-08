@@ -145,11 +145,7 @@ fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) 
 
                         1 -> { // Medical Records Tab
                             item {
-                                Text(
-                                    text = "Medical Records",
-                                    fontSize = 24.sp,
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                                MedicalScreen(it, eventsList.filter { it.type == "Medical" })
                             }
                         }
 
@@ -271,7 +267,7 @@ fun TopAppBarPetUiScreen(navController: NavController, pet: Pet) {
                 pressedElevation = 0.dp
             ),
             shape = RoundedCornerShape(25.dp),
-            onClick = { }
+            onClick = { navController.navigate("edit_pet_screen/${pet.petId}") }
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),

@@ -60,6 +60,10 @@ class RoomDB(context: Context) {
         appDatabase.petDao().addMedia(media)
     }
 
+    suspend fun updateMedia(media: Media) {
+        appDatabase.petDao().updateMedia(media)
+    }
+
     suspend fun getMediaForPet(petId: Int): List<Media> {
         return appDatabase.petDao().getMediaForPet(petId)
     }

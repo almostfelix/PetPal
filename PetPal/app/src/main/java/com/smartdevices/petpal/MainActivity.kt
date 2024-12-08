@@ -1,11 +1,13 @@
 package com.smartdevices.petpal
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.animation.AnimationUtils
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.collectAsState
@@ -20,15 +22,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.petpal.R
 import com.smartdevices.petpal.db.PetViewModelFactory
+import com.smartdevices.petpal.login.LoginActivity
 import com.smartdevices.petpal.tools.PreferenceManager
+import com.smartdevices.petpal.tools.RequestPermissionsContent
 import com.smartdevices.petpal.ui.AddNewPetScreen
+import com.smartdevices.petpal.ui.EditPetScreen
 import com.smartdevices.petpal.ui.MainScreen
 import com.smartdevices.petpal.ui.PetUi
 import com.smartdevices.petpal.ui.settings.SettingsScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var petViewModel: PetViewModel
     private var keepSplashScreen = mutableStateOf(true)
@@ -46,11 +51,17 @@ class MainActivity : ComponentActivity() {
         petViewModel = ViewModelProvider(this, factory)[PetViewModel::class.java]
 
         val preferenceManager = PreferenceManager(applicationContext)
+        if (preferenceManager.getSaveMethod() == "NOT SET") {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
 
+
+        /*
         lifecycleScope.launch {
             delay(100)
             keepSplashScreen.value = false
-        }
+        }*/
 
         //Log.d("Debug", petViewModel.getAllPets().toString())
 
@@ -71,6 +82,16 @@ class MainActivity : ComponentActivity() {
         //Log.d("Debug", "Pets: $pets")
 
         setContent {
+            RequestPermissionsContent(
+                onPermissionsGranted = {
+                    keepSplashScreen.value = false
+                    Log.d("Debug", "Permissions granted")
+                },
+                onPermissionsDenied = {
+                    keepSplashScreen.value = false
+                    Log.d("Debug", "Permissions denied")
+                }
+            )
             JetpackComposeTestTheme {
                 // Set up NavController
                 val navController = rememberNavController()
@@ -128,6 +149,12 @@ class MainActivity : ComponentActivity() {
                                 petId = petId,
                                 petViewModel = petViewModel
                             )
+                        }
+                    }
+                    composable("edit_pet_screen/{petId}"){  backStackEntry ->
+                        val petId = backStackEntry.arguments?.getString("petId")?.toInt()
+                        petId?.let {
+                            EditPetScreen(petViewModel, petId, navController)
                         }
                     }
 

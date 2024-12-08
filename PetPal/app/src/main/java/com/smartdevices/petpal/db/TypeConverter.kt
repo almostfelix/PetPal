@@ -17,17 +17,6 @@ class Converters {
     }
 
     @TypeConverter
-    fun listOfMedicalEventsToString(medicalEvents: List<MedicalEvent>): String {
-        return Gson().toJson(medicalEvents)
-    }
-
-    @TypeConverter
-    fun stringToListOfMedicalEvents(medicalEventsString: String): List<MedicalEvent> {
-        val type = object : TypeToken<List<MedicalEvent>>() {}.type
-        return Gson().fromJson(medicalEventsString, type)
-    }
-
-    @TypeConverter
     fun fromStringList(value: List<String>?): String? {
         return Gson().toJson(value) // Converts List<String> to a JSON string
     }

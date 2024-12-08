@@ -20,6 +20,7 @@ import com.smartdevices.petpal.MainActivity
 import com.petpal.R
 import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.LoginScreen
+import com.smartdevices.petpal.ui.theme.JetpackComposeTestTheme
 
 class LoginActivity : ComponentActivity() {
 
@@ -65,9 +66,12 @@ class LoginActivity : ComponentActivity() {
         }
 
         setContent {
-            LoginScreen( preferenceManager = PreferenceManager(applicationContext), onGoogleSignInClick = { signInWithGoogle() },
-                onLocalSignInClick = { localSignIn() }
-            )
+            JetpackComposeTestTheme {
+                LoginScreen(preferenceManager = PreferenceManager(applicationContext),
+                    onGoogleSignInClick = { signInWithGoogle() },
+                    onLocalSignInClick = { localSignIn() }
+                )
+            }
         }
     }
 
