@@ -376,7 +376,7 @@ fun SettingRowSwitch(name: String, icon: Painter, onCheckedChange: (Boolean) -> 
 @Composable
 fun SettingsScreenPreview() {
     val navController = rememberNavController()
-    JetpackComposeTestTheme {
+    JetpackComposeTestTheme(preferenceManager = PreferenceManager(LocalContext.current)) {
         SettingsScreen(navController = navController)
     }
 }

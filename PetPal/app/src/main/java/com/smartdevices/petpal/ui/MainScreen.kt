@@ -72,7 +72,7 @@ fun MainScreen(navController: NavController, viewModel: PetViewModel, preference
     val thumbnailList: List<Media> by viewModel.thumbnails.collectAsState(initial = emptyList())
     val petsList: List<Pet> by viewModel.petsList.collectAsState(initial = emptyList())
     Log.d("Debug", thumbnailList.toString())
-    JetpackComposeTestTheme(preferenceManager.getTheme()) {
+    JetpackComposeTestTheme(preferenceManager) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

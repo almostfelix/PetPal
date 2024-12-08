@@ -68,11 +68,11 @@ class PreferenceManager(context: Context) {
         return sharedPreferences.getString(USER_PHOTO, DEFAULT_PHOTO) ?: DEFAULT_PHOTO
     }
 
-    fun saveTheme(isDarkMode: Boolean) {
+    fun setTheme(isDarkMode: Boolean) {
         sharedPreferences.edit().putBoolean(THEME, isDarkMode).apply()
     }
 
     fun getTheme(): Boolean {
-        return sharedPreferences.getBoolean(THEME, false)
+        return sharedPreferences.getBoolean(THEME, true) // Default is false (light mode)
     }
 }

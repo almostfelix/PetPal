@@ -15,7 +15,7 @@ val g_red_light = Color(0xEA4335ff)
 val error_red_light = Color(0xff9494ff)
 val l_blue_light = Color(0x4897f7ff)
 
-val bg_dark = Color(0xfefefeff)
+val bg_dark = Color(0xff2d2d2d)
 val prim_dark = Color(0x007affff)
 val prim_sec_dark = Color(0x007affff)
 val accent_dark = Color(0xFFDDFAff)

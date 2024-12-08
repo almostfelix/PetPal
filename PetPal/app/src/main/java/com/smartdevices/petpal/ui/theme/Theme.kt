@@ -11,6 +11,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import com.smartdevices.petpal.tools.CustomColorScheme
+import com.smartdevices.petpal.tools.PreferenceManager
 
 private val DarkColorScheme = CustomColorScheme(
     primary = prim_dark,
@@ -39,15 +40,20 @@ private val LightColorScheme = CustomColorScheme(
     l_blue = l_blue_light,
     g_blue = g_blue_light
 )
-val LocalCustomColors = compositionLocalOf { LightColorScheme }
+val LocalCustomColors = compositionLocalOf { DarkColorScheme }
 
 @Composable
 fun JetpackComposeTestTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    preferenceManager: PreferenceManager,
     content: @Composable () -> Unit
 ) {
-    val customColors = if (darkTheme) DarkColorScheme else LightColorScheme
+    // Get the theme preference from PreferenceManager (true for dark mode)
+    val isDarkMode = preferenceManager.getTheme()
 
+    // Use the appropriate color scheme based on the theme preference
+    val customColors = if (isDarkMode) DarkColorScheme else LightColorScheme
+
+    // Provide the custom colors to the composition
     CompositionLocalProvider(LocalCustomColors provides customColors) {
         MaterialTheme(
             typography = Typography,
