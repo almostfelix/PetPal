@@ -161,11 +161,7 @@ fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) 
 
                         3 -> { // Details Tab
                             item {
-                                Text(
-                                    text = "Details",
-                                    fontSize = 24.sp,
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                                DetailsScreen(it)
                             }
                         }
                     }

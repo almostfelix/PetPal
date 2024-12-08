@@ -39,6 +39,8 @@ import com.smartdevices.petpal.tools.PreferenceManager
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
     val preferenceManager = PreferenceManager(context)
+    val isDarkMode = preferenceManager.getTheme()
+    var isChecked by remember { mutableStateOf(isDarkMode) }
 
     Box(
         modifier = Modifier
@@ -260,47 +262,78 @@ fun SettingsScreen(navController: NavController) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    // First Setting Row
-                    SettingRowSwitch(
-                        name = "Language",
-                        icon = painterResource(R.drawable.baseline_account_circle_128),
-                        onCheckedChange = {  }
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 0.dp), // Padding between rows
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_dark_mode_32), // Icon for each setting
+                            contentDescription = "Theme",
+                            tint = colorResource(id = R.color.l_blue), // Icon color
+                            modifier = Modifier.size(24.dp) // Icon size
+                        )
 
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
 
+                        // Setting name text
+                        Text(
+                            text = "Theme",
+                            fontSize = 16.sp,
+                            color = colorResource(id = R.color.black_icon), // Text color
+                            modifier = Modifier.weight(1f) // Makes text take up the remaining space
+                        )
+
+                        Switch(
+                            checked = isChecked,
+                            onCheckedChange = {
+                                isChecked = it
+                                preferenceManager.setTheme(it)
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = colorResource(id = R.color.bg),
+                                uncheckedThumbColor = Color.Gray,
+                                checkedTrackColor = colorResource(id = R.color.l_blue),
+                                uncheckedTrackColor = Color.LightGray
+                            )
+                        )
+
+                    }
 
 
                 }
             }
-            if (preferenceManager.getSaveMethod()=="cloud"){
-            Row( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                Card(
-                modifier = Modifier
-                    .padding(16.dp),
-
-                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-                shape = RoundedCornerShape(32.dp),
-                colors = CardDefaults.cardColors(colorResource(id = R.color.g_red))
-            ) {
-                Box(
-                    modifier = Modifier
-
-                        .padding(16.dp),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_logout_32),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.bg), // Icon color
+            if (preferenceManager.getSaveMethod() == "cloud") {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    Card(
                         modifier = Modifier
-                            .size(24.dp) // Icon size
-                            .clickable {
-                                preferenceManager.setSaveMethod("local", null)
-                                navController.popBackStack()
-                            }
-                    )
+                            .padding(16.dp),
+
+                        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+                        shape = RoundedCornerShape(32.dp),
+                        colors = CardDefaults.cardColors(colorResource(id = R.color.g_red))
+                    ) {
+                        Box(
+                            modifier = Modifier
+
+                                .padding(16.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_logout_32),
+                                contentDescription = null,
+                                tint = colorResource(id = R.color.bg), // Icon color
+                                modifier = Modifier
+                                    .size(24.dp) // Icon size
+                                    .clickable {
+                                        preferenceManager.setSaveMethod("local", null)
+                                        navController.popBackStack()
+                                    }
+                            )
+                        }
+                    }
                 }
-            }}
 
             }
 
@@ -325,51 +358,6 @@ fun FillerText(title: String, size: Int, padding: Int) {
         )
     }
 }
-
-@Composable
-fun SettingRowSwitch(name: String, icon: Painter, onCheckedChange: (Boolean) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 0.dp), // Padding between rows
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Icon for the setting
-        Icon(
-            painter = icon, // Icon for each setting
-            contentDescription = name,
-            tint = Color.Blue, // Icon color
-            modifier = Modifier.size(24.dp) // Icon size
-        )
-
-        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-
-        // Setting name text
-        Text(
-            text = name,
-            fontSize = 16.sp,
-            color = colorResource(id = R.color.black_icon), // Text color
-            modifier = Modifier.weight(1f) // Makes text take up the remaining space
-        )
-
-        Switch(
-            checked = false,
-            onCheckedChange = { /* Handle toggle here if needed */ },
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = colorResource(id = R.color.bg),
-                uncheckedThumbColor = Color.Gray,
-                checkedTrackColor = colorResource(id = R.color.l_blue),
-                uncheckedTrackColor = Color.LightGray
-            )
-        )
-
-    }
-}
-
-
-
-
-
 
 
 @Preview(showBackground = true)
