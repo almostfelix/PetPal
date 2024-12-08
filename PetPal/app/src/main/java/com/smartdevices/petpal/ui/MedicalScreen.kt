@@ -40,7 +40,7 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
 
         Spacer(modifier = Modifier.size(16.dp))
         Log.d("PetPal", "MedicalScreen: allergies=${pet.medicalInfo.allergies}")
-        if (medicalInfo.allergies != listOf("")) {
+        if (medicalInfo.allergies.isNotEmpty() || medicalInfo.diet.isNotEmpty() || medicalInfo.weight.isNotEmpty()) {
             Log.d("PetPal", "MedicalScreen: allergies2=${medicalInfo.allergies}")
             Card(
                 modifier = Modifier
@@ -80,86 +80,122 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                             .background(Color.Transparent)
                     ) {
 
-                        // Allergies Title
-                        Text(
-                            text = "Allergies",
-                            color = colorResource(id = R.color.black_icon),
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
-                        )
+                        if (medicalInfo.allergies.isNotEmpty()) {
+                            // Allergies Title
+                            Text(
+                                text = "Allergies",
+                                color = colorResource(id = R.color.black_icon),
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
+                            )
 
-                        // Allergies Grid
-                        val allergies = medicalInfo.allergies
-                        val allergiesPerRow = 3
+                            // Allergies Grid
+                            val allergies = medicalInfo.allergies
+                            val allergiesPerRow = 3
 
-                        // Grid-like layout with fixed rows
-                        for (i in allergies.indices step allergiesPerRow) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)  // Spaced arrangement between cards
-                            ) {
-                                for (j in 0 until allergiesPerRow) {
-                                    val index = i + j
-                                    if (index < allergies.size) {
-                                        Card(
-                                            modifier = Modifier
-                                                .fillMaxWidth() // Make sure each card takes up the full width of the row
-                                                .weight(1f) // Ensures the cards expand if there are fewer than the max per row
-                                                .padding(horizontal = 4.dp)
-                                                .defaultMinSize(minHeight = 80.dp),
-                                            elevation = CardDefaults.cardElevation(8.dp),
-                                            colors = CardDefaults.cardColors(
-                                                containerColor = colorResource(id = R.color.bg)
-                                            )
-                                        ) {
-                                            Box(
+                            // Grid-like layout with fixed rows
+                            for (i in allergies.indices step allergiesPerRow) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)  // Spaced arrangement between cards
+                                ) {
+                                    for (j in 0 until allergiesPerRow) {
+                                        val index = i + j
+                                        if (index < allergies.size) {
+                                            Card(
                                                 modifier = Modifier
-                                                    .padding(8.dp)
-                                                    .fillMaxWidth()
-                                                    .defaultMinSize(minHeight = 80.dp)
-                                            ) {
-                                                Text(
-                                                    text = allergies[index],
-                                                    color = colorResource(id = R.color.black_icon),
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    fontSize = 16.sp
+                                                    .fillMaxWidth() // Make sure each card takes up the full width of the row
+                                                    .weight(1f) // Ensures the cards expand if there are fewer than the max per row
+                                                    .padding(horizontal = 4.dp)
+                                                    .defaultMinSize(minHeight = 80.dp),
+                                                elevation = CardDefaults.cardElevation(8.dp),
+                                                colors = CardDefaults.cardColors(
+                                                    containerColor = colorResource(id = R.color.bg)
                                                 )
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .padding(8.dp)
+                                                        .fillMaxWidth()
+                                                        .defaultMinSize(minHeight = 80.dp)
+                                                ) {
+                                                    Text(
+                                                        text = allergies[index],
+                                                        color = colorResource(id = R.color.black_icon),
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        fontSize = 16.sp
+                                                    )
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                        Text(
-                            text = "Diet",
-                            color = colorResource(id = R.color.black_icon),
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
-                        )
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth() // Make sure each card takes up the full width of the row
-                                .padding(horizontal = 4.dp)
-                                .defaultMinSize(minHeight = 80.dp),
-                            elevation = CardDefaults.cardElevation(8.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = colorResource(id = R.color.bg)
+                        if (medicalInfo.diet.isNotEmpty()) {
+                            Text(
+                                text = "Diet",
+                                color = colorResource(id = R.color.black_icon),
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
                             )
-                        ) {
-                            Box(
+                            Card(
                                 modifier = Modifier
-                                    .padding(8.dp)
-                                    .fillMaxWidth()
-                                    .defaultMinSize(minHeight = 80.dp)
-                            ) {
-                                Text(
-                                    text = medicalInfo.diet,
-                                    color = colorResource(id = R.color.black_icon),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.align(Alignment.Center),
-                                    fontSize = 16.sp
+                                    .fillMaxWidth() // Make sure each card takes up the full width of the row
+                                    .padding(horizontal = 4.dp)
+                                    .defaultMinSize(minHeight = 80.dp),
+                                elevation = CardDefaults.cardElevation(8.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = colorResource(id = R.color.bg)
                                 )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth()
+                                        .defaultMinSize(minHeight = 80.dp)
+                                ) {
+                                    Text(
+                                        text = medicalInfo.diet,
+                                        color = colorResource(id = R.color.black_icon),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.align(Alignment.Center),
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                        }
+                        if (medicalInfo.weight.isNotEmpty()) {
+                            Text(
+                                text = "Weight",
+                                color = colorResource(id = R.color.black_icon),
+                                modifier = Modifier.padding(vertical = 8.dp, horizontal = 8.dp)
+                            )
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth() // Make sure each card takes up the full width of the row
+                                    .padding(horizontal = 4.dp)
+                                    .defaultMinSize(minHeight = 80.dp),
+                                elevation = CardDefaults.cardElevation(8.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = colorResource(id = R.color.bg)
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .fillMaxWidth()
+                                        .defaultMinSize(minHeight = 80.dp)
+                                ) {
+                                    Text(
+                                        text = medicalInfo.weight,
+                                        color = colorResource(id = R.color.black_icon),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.align(Alignment.Center),
+                                        fontSize = 16.sp
+                                    )
+                                }
                             }
                         }
                     }

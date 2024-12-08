@@ -62,20 +62,21 @@ import com.smartdevices.petpal.db.Pet
 import com.smartdevices.petpal.db.PetViewModel
 import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.theme.JetpackComposeTestTheme
+import com.smartdevices.petpal.ui.theme.LocalCustomColors
 import kotlin.math.min
-
 @Composable
-fun MainScreen(navController: NavController, viewModel: PetViewModel) {
+fun MainScreen(navController: NavController, viewModel: PetViewModel, preferenceManager: PreferenceManager) {
+    val customColors = LocalCustomColors.current
     viewModel.loadPets()
     viewModel.getThumbnails()
     val thumbnailList: List<Media> by viewModel.thumbnails.collectAsState(initial = emptyList())
     val petsList: List<Pet> by viewModel.petsList.collectAsState(initial = emptyList())
     Log.d("Debug", thumbnailList.toString())
-    JetpackComposeTestTheme {
+    JetpackComposeTestTheme(preferenceManager.getTheme()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = colorResource(id = R.color.bg)),
+                .background(color = customColors.background),
             verticalArrangement = Arrangement.Top
         ) {
             TopAppBarMainScreen(navController = navController)

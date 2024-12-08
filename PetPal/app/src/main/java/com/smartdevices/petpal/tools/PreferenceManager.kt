@@ -12,6 +12,8 @@ class PreferenceManager(context: Context) {
         private const val USER_NAME = "user_name"
         private const val USER_EMAIL = "user_email"
         private const val USER_PHOTO = "user_photo"
+        private const val THEME = "theme"
+        private const val DEfAULT_THEME = false
         private const val DEFAULT_NAME = ""
         private const val DEFAULT_EMAIL = ""
         private const val DEFAULT_PHOTO = ""
@@ -64,5 +66,13 @@ class PreferenceManager(context: Context) {
 
     fun getUserPhoto(): String {
         return sharedPreferences.getString(USER_PHOTO, DEFAULT_PHOTO) ?: DEFAULT_PHOTO
+    }
+
+    fun saveTheme(isDarkMode: Boolean) {
+        sharedPreferences.edit().putBoolean(THEME, isDarkMode).apply()
+    }
+
+    fun getTheme(): Boolean {
+        return sharedPreferences.getBoolean(THEME, false)
     }
 }

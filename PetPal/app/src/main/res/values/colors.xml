@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    // Light Theme Colors
     <color name="bg">#fefefe</color>
     <color name="prim">#007aff</color>
     <color name="prim_sec">#DDE6FF</color>
     <color name="accent">#FFDDFA</color>
-    <color name="accent_dark">#FF99F0</color>
+    <color name="accent2">#FF99F0</color>
     <color name="black_icon">#2D2D2D</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="text_color_dark">#000000</color>
     <color name="shadow">#a1a1a1</color>
     <color name="disabled">#717171</color>
     <color name="black">#000000</color>
@@ -15,4 +14,19 @@
     <color name="g_red">#EA4335</color>
     <color name="error_red">#ff9494</color>
     <color name="l_blue">#4897f7</color>
+
+    // Dark Theme Colors
+    <color name="bg_dark">#fefefe</color>
+    <color name="prim_dark">#007aff</color>
+    <color name="prim_sec_dark">#DDE6FF</color>
+    <color name="accent_dark">#FFDDFA</color>
+    <color name="accent2_dark">#FF99F0</color>
+    <color name="black_icon_dark">#2D2D2D</color>
+    <color name="shadow_dark">#a1a1a1</color>
+    <color name="disabled_dark">#717171</color>
+    <color name="black_dark">#000000</color>
+    <color name="g_blue_dark">#4285F4</color>
+    <color name="g_red_dark">#EA4335</color>
+    <color name="error_red_dark">#ff9494</color>
+    <color name="l_blue_dark">#4897f7</color>
 </resources>

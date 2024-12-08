@@ -127,7 +127,8 @@ class MainActivity : AppCompatActivity() {
                     composable("main_screen") {
                         MainScreen(
                             navController = navController,
-                            viewModel = petViewModel
+                            viewModel = petViewModel,
+                            preferenceManager = preferenceManager
                         )
                     }
                     composable("settings_screen") {
