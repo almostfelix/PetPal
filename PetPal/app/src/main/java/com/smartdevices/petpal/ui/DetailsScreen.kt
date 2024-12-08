@@ -121,7 +121,7 @@ fun DetailRow(pet: Pet, petInfo: String, title: String, visibleState: Boolean) {
                 modifier = Modifier.wrapContentWidth().padding(4.dp),
                 shape = RoundedCornerShape(8.dp),
                 elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.accent2))
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.ll_blue))
             ) {
                 Text(
                     text = title,
@@ -134,7 +134,7 @@ fun DetailRow(pet: Pet, petInfo: String, title: String, visibleState: Boolean) {
                 modifier = Modifier.weight(1f).padding(4.dp),
                 shape = RoundedCornerShape(8.dp),
                 elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.accent))
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.lll_blue))
             ) {
                 Text(
                     text = when (petInfo) {

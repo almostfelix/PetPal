@@ -2,6 +2,7 @@
 <resources>
     // Light Theme Colors
     <color name="bg">#fefefe</color>
+    <color name="bg_shadow">#f7f7f7</color>
     <color name="prim">#007aff</color>
     <color name="prim_sec">#DDE6FF</color>
     <color name="accent">#FFDDFA</color>
@@ -14,6 +15,9 @@
     <color name="g_red">#EA4335</color>
     <color name="error_red">#ff9494</color>
     <color name="l_blue">#4897f7</color>
+    <color name="ll_blue">#8abfff</color>
+    <color name="lll_blue">#c7e0ff</color>
+    <color name="llll_blue">#e3efff</color>
 
     // Dark Theme Colors
     <color name="bg_dark">#fefefe</color>

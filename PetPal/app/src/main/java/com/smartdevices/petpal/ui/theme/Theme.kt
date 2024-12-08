@@ -7,16 +7,12 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import com.smartdevices.petpal.tools.CustomColorScheme
-import com.smartdevices.petpal.tools.PreferenceManager
 
 private val DarkColorScheme = CustomColorScheme(
     primary = prim_dark,
-    secondary = accent_dark,
-    secondary2 = accent2_dark,
+    secondary = prim_sec_dark,
     background = bg_dark,
     blackIcon = black_icon_dark,
     shadow = shadow_dark,
@@ -24,40 +20,54 @@ private val DarkColorScheme = CustomColorScheme(
     g_red = g_red_dark,
     error_red = error_red_dark,
     l_blue = l_blue_dark,
-    g_blue = g_blue_dark
+    g_blue = g_blue_dark,
+    secondary2 = accent2_dark,
 )
 
 private val LightColorScheme = CustomColorScheme(
-    primary = prim_light,
-    secondary = accent_light,
-    secondary2 = accent2_light,
-    background = bg_light,
-    blackIcon = black_icon_light,
-    shadow = shadow_light,
-    disabled = disabled_light,
-    g_red = g_red_light,
-    error_red = error_red_light,
-    l_blue = l_blue_light,
-    g_blue = g_blue_light
+    primary = prim_dark,
+    secondary = prim_sec_dark,
+    background = bg_dark,
+    blackIcon = black_icon_dark,
+    shadow = shadow_dark,
+    disabled = disabled_dark,
+    g_red = g_red_dark,
+    error_red = error_red_dark,
+    l_blue = l_blue_dark,
+    g_blue = g_blue_dark,
+    secondary2 = accent2_dark,
 )
-val LocalCustomColors = compositionLocalOf { DarkColorScheme }
+private val LightColorScheme2 = lightColorScheme(
+    primary = prim_dark,
+    secondary = prim_sec_dark,
+    background = bg_dark,
+    surface = bg_dark,
+    onPrimary = black_icon_dark,
+    onSecondary = shadow_dark,
+    onBackground = disabled_dark,
+    onSurface = g_red_dark,
+    error = error_red_dark,
+    onError = l_blue_dark
+)
 
 @Composable
 fun JetpackComposeTestTheme(
-    preferenceManager: PreferenceManager,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    // Get the theme preference from PreferenceManager (true for dark mode)
-    val isDarkMode = preferenceManager.getTheme()
-
-    // Use the appropriate color scheme based on the theme preference
-    val customColors = if (isDarkMode) DarkColorScheme else LightColorScheme
-
-    // Provide the custom colors to the composition
-    CompositionLocalProvider(LocalCustomColors provides customColors) {
-        MaterialTheme(
-            typography = Typography,
-            content = content
-        )
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
     }
+
+    MaterialTheme(
+        colorScheme = LightColorScheme2,
+        typography = Typography,
+        content = content
+    )
 }

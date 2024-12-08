@@ -360,12 +360,3 @@ fun FillerText(title: String, size: Int, padding: Int) {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun SettingsScreenPreview() {
-    val navController = rememberNavController()
-    JetpackComposeTestTheme(preferenceManager = PreferenceManager(LocalContext.current)) {
-        SettingsScreen(navController = navController)
-    }
-}
-

@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,23 +46,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.petpal.R
 import com.smartdevices.petpal.db.Event
+import com.smartdevices.petpal.db.Media
 import com.smartdevices.petpal.db.Pet
 import com.smartdevices.petpal.db.PetViewModel
 import java.time.YearMonth
-
-
 
 
 @Composable
 fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) {
     petViewModel.getPetById(petId)
     petViewModel.loadEventsForPet(petId)
+    petViewModel.loadMediaForPet(petId)
     val currentPet: Pet? by petViewModel.currentPet.collectAsState(initial = null)
     val eventsList: List<Event> by petViewModel.eventsList.collectAsState(initial = emptyList())
     val mediaList by petViewModel.mediaList.collectAsState(initial = emptyList())
-    var showDialog by remember { mutableStateOf(false) }
     val currentMonth = remember { mutableStateOf(YearMonth.now()) }
-    val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(0) } // State to track the selected tab
     var previousTab by remember { mutableStateOf(0) } // State to track the previous tab
 
@@ -89,7 +88,7 @@ fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) 
                                 durationMillis = 600, // Slower animation (600ms)
                                 easing = FastOutSlowInEasing // Smooth easing
                             )
-                        ) togetherWith  slideOutHorizontally(
+                        ) togetherWith slideOutHorizontally(
                             targetOffsetX = { -it },
                             animationSpec = tween(
                                 durationMillis = 600,
@@ -104,7 +103,7 @@ fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) 
                                 durationMillis = 600, // Slower animation (600ms)
                                 easing = FastOutSlowInEasing
                             )
-                        ) togetherWith  slideOutHorizontally(
+                        ) togetherWith slideOutHorizontally(
                             targetOffsetX = { it },
                             animationSpec = tween(
                                 durationMillis = 600,
@@ -115,79 +114,62 @@ fun PetUi(navController: NavController, petId: Int, petViewModel: PetViewModel) 
                 },
                 modifier = Modifier.fillMaxSize()
             ) { targetTab ->
-                LazyColumn(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp, 0.dp, 16.dp, 0.dp)
                 ) {
                     when (targetTab) {
                         0 -> { // Events Tab
-                            item {
-                                CalendarScreen(
-                                    it,
-                                    eventsList,
-                                    mediaList,
-                                    currentMonth,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(300.dp)
-                                        .padding(16.dp)
-                                )
-                            }
-
-                            item {
-                                AddEventBtn { showDialog = true }
-                            }
-                            item {
-                                EventCard(eventsList)
+                            LazyColumn {
+                                item {
+                                    CalendarScreen(
+                                        it,
+                                        eventsList,
+                                        mediaList,
+                                        currentMonth,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(300.dp)
+                                            .padding(16.dp)
+                                    )
+                                }
+                                item {
+                                    EventCard(eventsList, currentPet!!, petViewModel) // Your EventCard composable to display event data
+                                }
                             }
                         }
 
                         1 -> { // Medical Records Tab
-                            item {
-                                MedicalScreen(it, eventsList.filter { it.type == "Medical" })
+                            // Filter events based on type and display them in a LazyColumn
+                            LazyColumn {
+                                item {
+                                    MedicalScreen(it, eventsList.filter { it.type == "Medical" }, petViewModel = petViewModel)
+                                }
                             }
                         }
 
                         2 -> { // Memories Tab
-                            item {
-                                Text(
-                                    text = "Memories",
-                                    fontSize = 24.sp,
-                                    modifier = Modifier.padding(16.dp)
-                                )
-                            }
+                                    Memories(
+                                        mediaList = mediaList,
+                                        petId = petId,
+                                        petViewModel = petViewModel
+                                    )
                         }
 
                         3 -> { // Details Tab
-                            item {
-                                DetailsScreen(it)
+                            LazyColumn {
+                                item {
+                                    DetailsScreen(it)
+                                }
                             }
                         }
                     }
                 }
+
             }
         }
     }
-
-    CustomDialog(
-        showDialog = showDialog,
-        onDismissRequest = { showDialog = false },
-        content = {
-            AddEventDialog(
-                context = context,
-                onDismissRequest = { showDialog = false },
-                onConfirm = { title, description, date, time, type ->
-                    currentPet?.let { Event(-1, -1, title, description, date, time, type) }?.let {
-                        petViewModel.addEventToPet(petId,
-                            it
-                        )
-                    }
-                    showDialog = false
-                }
-            )
-        }
-    )
 }
 
 
@@ -305,16 +287,19 @@ fun UpperNavigationBar(onTabSelected: (Int) -> Unit) {
                                 contentDescription = item,
                                 modifier = Modifier.size(24.dp)
                             )
+
                             "Medical Records" -> Icon(
                                 painter = painterResource(R.drawable.outline_medical_services_32),
                                 contentDescription = item,
                                 modifier = Modifier.size(24.dp)
                             )
+
                             "Memories" -> Icon(
                                 painter = painterResource(R.drawable.baseline_favorite_border_32),
                                 contentDescription = item,
                                 modifier = Modifier.size(24.dp)
                             )
+
                             "Details" -> Icon(
                                 painter = painterResource(R.drawable.outline_info_32),
                                 contentDescription = item,

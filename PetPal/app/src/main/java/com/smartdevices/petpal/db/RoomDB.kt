@@ -52,6 +52,10 @@ class RoomDB(context: Context) {
         appDatabase.petDao().deleteEvent(event)
     }
 
+    suspend fun deleteEventFromPet(petId: Int, eventId: Int) {
+        appDatabase.petDao().deleteEventFromPet(petId = petId, eventId = eventId)
+    }
+
     suspend fun getThumbnails(): List<Media> {
         return appDatabase.petDao().getThumbnails()
     }
@@ -74,5 +78,9 @@ class RoomDB(context: Context) {
 
     suspend fun deleteMedia(media: Media) {
         appDatabase.petDao().deleteMedia(media)
+    }
+
+    suspend fun deleteMediaForPet(petId: Int, mediaId: Int) {
+        appDatabase.petDao().deleteMediaForPet(petId = petId, mediaId = mediaId)
     }
 }

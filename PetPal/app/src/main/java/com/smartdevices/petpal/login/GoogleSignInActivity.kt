@@ -66,7 +66,7 @@ class LoginActivity : ComponentActivity() {
         }
 
         setContent {
-            JetpackComposeTestTheme(preferenceManager) {
+            JetpackComposeTestTheme(true) {
                 LoginScreen(preferenceManager = PreferenceManager(applicationContext),
                     onGoogleSignInClick = { signInWithGoogle() },
                     onLocalSignInClick = { localSignIn() }

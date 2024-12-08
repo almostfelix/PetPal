@@ -2,7 +2,7 @@ package com.smartdevices.petpal.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val bg_light = Color(0xfefefeff)
+val bg_light = Color(0xfffefefe)
 val prim_light = Color(0x007affff)
 val prim_sec_light = Color(0x007affff)
 val accent_light = Color(0xFFDDFAff)

@@ -3,6 +3,7 @@ package com.smartdevices.petpal.ui
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -60,22 +61,31 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.petpal.R
+import com.smartdevices.petpal.db.Event
 import java.util.Calendar
 
 
 @Composable
 fun AddEventDialog(
     context: Context,
-    onDismissRequest: () -> Unit,
-    onConfirm: (String, String, String, String, String) -> Unit,
+    onDismissRequest: (Event) -> Unit,
+    onConfirm: (Event) -> Unit,
+    event: Event? = null
 ) {
+
+    Log.d("AddEventDialog", "event: $event")
     // State holders for your input fields
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("") }
-    var time by remember { mutableStateOf("") }
-    var type by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf(event?.title?:"") }
+    var description by remember { mutableStateOf(event?.description?:"") }
+    var date by remember { mutableStateOf(event?.date?:"") }
+    var time by remember { mutableStateOf(event?.time?:"") }
+    var type by remember { mutableStateOf(event?.type?:"") }
     var isGeneral by remember { mutableStateOf(true) }
+    if (type == "General") {
+        isGeneral = true
+    } else {
+        isGeneral = false
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,14 +93,14 @@ fun AddEventDialog(
             .padding(16.dp)
             .background(
                 color = Color.Transparent,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(24.dp)
             )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(16.dp),
+                .padding(16.dp, 8.dp, 16.dp, 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Box(
@@ -103,9 +113,30 @@ fun AddEventDialog(
                     text = "New Event",
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
+                if (event != null) {
+                    Card(
+                        modifier = Modifier
+                            .clickable { onDismissRequest(event) }
+                            .size(32.dp)
+                            .align(Alignment.CenterEnd),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.g_red)),
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.round_delete_forever_32),
+                                contentDescription = "Delete",
+                                tint = colorResource(id = R.color.bg),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Input Fields
             Column {
@@ -124,7 +155,8 @@ fun AddEventDialog(
                         errorLabelColor = colorResource(R.color.error_red),
                         errorContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = colorResource(R.color.prim),
                     )
                 )
 
@@ -145,7 +177,8 @@ fun AddEventDialog(
                         errorLabelColor = colorResource(R.color.error_red),
                         errorContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = colorResource(R.color.prim),
                     )
                 )
 
@@ -165,7 +198,8 @@ fun AddEventDialog(
                         errorLabelColor = colorResource(R.color.error_red),
                         errorContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = colorResource(R.color.prim),
                     ),
                     trailingIcon = {
                         Icon(
@@ -211,7 +245,8 @@ fun AddEventDialog(
                         errorLabelColor = colorResource(R.color.error_red),
                         errorContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = colorResource(R.color.prim),
                     ),
                     trailingIcon = {
                         Icon(
@@ -228,7 +263,7 @@ fun AddEventDialog(
                                     TimePickerDialog(
                                         context,
                                         { _, hourOfDay, minute ->
-                                            time = "$hourOfDay:$minute"
+                                            time = String.format("%02d:%02d", hourOfDay, minute)
                                             // Update the time field
                                         },
                                         hour,
@@ -250,7 +285,7 @@ fun AddEventDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp, 4.dp, 8.dp, 4.dp),
+                            .padding(8.dp, 8.dp, 8.dp, 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         SelectableCard(
@@ -294,12 +329,12 @@ fun AddEventDialog(
             ) {
                 Button(
                     onClick = {
-                        onDismissRequest()
+                        onDismissRequest(Event())
                     },
                     modifier = Modifier
                         .weight(1f),
                     colors = ButtonColors(
-                        containerColor = colorResource(id = R.color.g_red),
+                        containerColor = colorResource(id = R.color.accent2),
                         contentColor = colorResource(id = R.color.bg),
                         disabledContainerColor = colorResource(id = R.color.prim),
                         disabledContentColor = colorResource(id = R.color.bg),
@@ -311,8 +346,22 @@ fun AddEventDialog(
                     modifier = Modifier
                         .weight(1f),
                     onClick = {
-                        onConfirm(title, description, date, time, type)
-                        onDismissRequest()
+                        onConfirm(if (event == null) Event(
+                            title = title,
+                            description = description,
+                            date = date,
+                            time = time,
+                            type = type
+                        ) else Event(
+                            eventId = event.eventId,
+                            petId = event.petId,
+                            title = title,
+                            description = description,
+                            date = date,
+                            time = time,
+                            type = type
+                        ))
+                        onDismissRequest(Event())
                     },
                     colors = ButtonColors(
                         containerColor = colorResource(id = R.color.prim),
@@ -321,7 +370,7 @@ fun AddEventDialog(
                         disabledContentColor = colorResource(id = R.color.bg),
                     )
                 ) {
-                    Text("Add")
+                    Text(if (event == null) "Add" else "Save")
                 }
             }
         }
@@ -394,9 +443,9 @@ fun CustomDialog(
                     Box(
                         Modifier
                             .pointerInput(Unit) { detectTapGestures { } }
-                            .shadow(8.dp, shape = RoundedCornerShape(16.dp))
+                            .shadow(8.dp, shape = RoundedCornerShape(24.dp))
                             .width(300.dp)
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(RoundedCornerShape(24.dp))
                             .background(
                                 colorResource(id = R.color.bg),
                             ),

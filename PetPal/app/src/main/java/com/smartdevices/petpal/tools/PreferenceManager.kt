@@ -73,6 +73,6 @@ class PreferenceManager(context: Context) {
     }
 
     fun getTheme(): Boolean {
-        return sharedPreferences.getBoolean(THEME, true) // Default is false (light mode)
+        return sharedPreferences.getBoolean(THEME, false) // Default is false (light mode)
     }
 }

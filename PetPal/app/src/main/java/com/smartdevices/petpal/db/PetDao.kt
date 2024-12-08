@@ -55,6 +55,12 @@ interface PetDao {
     @Delete
     suspend fun deleteEvent(event: Event)
 
+    @Query("DELETE FROM event WHERE petId = :petId and eventId = :eventId")
+    suspend fun deleteEventFromPet(petId: Int, eventId: Int)
+
     @Delete
     suspend fun deleteMedia(media: Media)
+
+    @Query("DELETE FROM media WHERE petId = :petId and mediaId = :mediaId")
+    suspend fun deleteMediaForPet(petId: Int, mediaId: Int)
 }

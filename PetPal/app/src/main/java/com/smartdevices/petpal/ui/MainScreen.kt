@@ -6,9 +6,11 @@ import android.graphics.PorterDuffXfermode
 import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,8 +31,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -62,35 +70,43 @@ import com.smartdevices.petpal.db.Pet
 import com.smartdevices.petpal.db.PetViewModel
 import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.theme.JetpackComposeTestTheme
-import com.smartdevices.petpal.ui.theme.LocalCustomColors
 import kotlin.math.min
+import kotlin.math.pow
+
 @Composable
 fun MainScreen(navController: NavController, viewModel: PetViewModel, preferenceManager: PreferenceManager) {
-    val customColors = LocalCustomColors.current
     viewModel.loadPets()
     viewModel.getThumbnails()
     val thumbnailList: List<Media> by viewModel.thumbnails.collectAsState(initial = emptyList())
     val petsList: List<Pet> by viewModel.petsList.collectAsState(initial = emptyList())
+
     Log.d("Debug", thumbnailList.toString())
-    JetpackComposeTestTheme(preferenceManager) {
-        Column(
+    JetpackComposeTestTheme {
+        Column (
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = customColors.background),
-            verticalArrangement = Arrangement.Top
+                .background(color = colorResource(id = R.color.bg))
         ) {
             TopAppBarMainScreen(navController = navController)
             MainScreenBody(
                 pets = petsList,
                 thumbnailList = thumbnailList,
-                navController = navController
+                navController = navController,
+                viewModel = viewModel
             )
         }
     }
 }
 
 @Composable
-fun MainScreenBody(pets: List<Pet>, thumbnailList: List<Media>, navController: NavController) {
+fun MainScreenBody(pets: List<Pet>, thumbnailList: List<Media>, navController: NavController, viewModel: PetViewModel) {
+    val isSelectionMode = remember { mutableStateOf(false) }
+    val selectedItems = remember { mutableStateListOf<Pet>() }
+
+    // Update `isSelectionMode` based on `selectedItems`
+    LaunchedEffect(selectedItems.size) {
+        isSelectionMode.value = selectedItems.isNotEmpty()
+    }
 
     Box(
         modifier = Modifier
@@ -105,7 +121,67 @@ fun MainScreenBody(pets: List<Pet>, thumbnailList: List<Media>, navController: N
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             for (pet in pets) {
-                CardMainScreen(pet, thumbnailList, navController = navController)
+                CardMainScreen(
+                    pet = pet,
+                    thumbnailList = thumbnailList.filter { it.petId == pet.petId },
+                    isSelectionMode = isSelectionMode.value,
+                    selectedItems = selectedItems,
+                    navController = navController
+                )
+            }
+        }
+        // Delete button with bounce animation
+        val scale by animateFloatAsState(
+            targetValue = if (isSelectionMode.value && selectedItems.isNotEmpty()) 1.1f else 1f,
+            animationSpec = tween(
+                durationMillis = 300, // Duration for the bounce
+                easing = { fraction -> 1 - (1 - fraction).pow(2f) } // Easing function for a bounce effect
+            )
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(horizontal = 16.dp, vertical = 32.dp)
+        ) {
+            Card(
+                modifier = Modifier
+                    .width(64.dp)
+                    .height(64.dp)
+                    .scale(scale), // Apply the bounce scale here
+                colors = if (isSelectionMode.value && selectedItems.isNotEmpty())
+                    CardDefaults.cardColors(containerColor = colorResource(id = R.color.g_red))
+                else
+                    CardDefaults.cardColors(containerColor = colorResource(id = R.color.ll_blue)),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 16.dp,
+                    pressedElevation = 0.dp
+                ),
+                shape = RoundedCornerShape(25.dp),
+                onClick = {
+                    if (isSelectionMode.value && selectedItems.isNotEmpty()) {
+                        selectedItems.forEach() {
+                            viewModel.deletePet(it.petId)
+                        }
+                        selectedItems.clear() // Clear selection after deletion
+                    } else {
+                        navController.navigate("add_pet_screen")
+                    }
+                }
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = if (isSelectionMode.value && selectedItems.isNotEmpty())
+                            painterResource(R.drawable.round_delete_forever_32)
+                        else
+                            painterResource(R.drawable.baseline_add_32),
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.black_icon),
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     }
@@ -131,6 +207,7 @@ fun TopAppBarMainScreen(navController: NavController) {
             tint = Color.Unspecified
         )
 
+        /*
         // Center the Card in the Box
         Card(
             modifier = Modifier
@@ -168,7 +245,7 @@ fun TopAppBarMainScreen(navController: NavController) {
                     )
                 }
             }
-        }
+        }*/
         Row(
             modifier = Modifier
                 .fillMaxHeight()
@@ -240,8 +317,15 @@ fun TopAppBarMainScreen(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavController) {
+fun CardMainScreen(pet: Pet,
+                   thumbnailList: List<Media>,
+                   isSelectionMode: Boolean,
+                   selectedItems: SnapshotStateList<Pet>,
+                   navController: NavController
+) {
+    val isSelected = remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -251,8 +335,24 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
         Card(
             modifier = Modifier
                 .width(350.dp)
-                .height(235.dp),
-            onClick = { navController.navigate("pet_ui_screen/${pet.petId}") },
+                .height(235.dp)
+                .combinedClickable(
+                    onLongClick = {
+                        if (!isSelectionMode) {
+                            isSelected.value = true
+                            selectedItems.add(pet)
+                        } else {
+                            toggleSelection(pet, isSelected, selectedItems)
+                        }
+                    },
+                    onClick = {
+                        if (isSelectionMode) {
+                            toggleSelection(pet, isSelected, selectedItems)
+                        } else {
+                            navController.navigate("pet_ui_screen/${pet.petId}")
+                        }
+                    }
+                ),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
@@ -308,7 +408,7 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
                             .fillMaxSize()
                             .clip(RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp))
                             .background(Color.Transparent)
-                            .innerShadow(
+                            /*.innerShadow(
                                 color = Color.Black,
                                 cornersRadius = 0.dp,
                                 spread = 3.dp,
@@ -319,7 +419,7 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
                                 shadowBottom = false,
                                 shadowLeft = false,
                                 shadowRight = false
-                            ),
+                            )*/,
                     ) {
                         val painter = rememberAsyncImagePainter(thumbnailList.find { it.petId == pet.petId }?.url ?: "")
                         val state = painter.state
@@ -353,6 +453,19 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
             }
         }
     }
+}
+
+private fun toggleSelection(
+    pet: Pet,
+    isSelected: MutableState<Boolean>,
+    selectedItems: SnapshotStateList<Pet>
+) {
+    if (isSelected.value) {
+        selectedItems.remove(pet)
+    } else {
+        selectedItems.add(pet)
+    }
+    isSelected.value = !isSelected.value
 }
 
 fun Modifier.innerShadow(

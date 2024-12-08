@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,9 +19,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,10 +34,14 @@ import androidx.compose.ui.unit.sp
 import com.petpal.R
 import com.smartdevices.petpal.db.Event
 import com.smartdevices.petpal.db.Pet
+import com.smartdevices.petpal.db.PetViewModel
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
 
 @Composable
-fun MedicalScreen(pet: Pet, events: List<Event>) {
+fun MedicalScreen(pet: Pet, events: List<Event>, petViewModel: PetViewModel) {
     val medicalInfo = pet.medicalInfo
+    val hazeState = remember { HazeState() }
     Column(
         modifier = Modifier
             .background(color = colorResource(id = R.color.bg))
@@ -53,6 +62,11 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                     containerColor = colorResource(id = R.color.bg)
                 )
             ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = colorResource(id = R.color.bg))
+                ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -111,8 +125,9 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                                                     .defaultMinSize(minHeight = 80.dp),
                                                 elevation = CardDefaults.cardElevation(8.dp),
                                                 colors = CardDefaults.cardColors(
-                                                    containerColor = colorResource(id = R.color.bg)
+                                                    containerColor = colorResource(id = R.color.llll_blue)
                                                 )
+
                                             ) {
                                                 Box(
                                                     modifier = Modifier
@@ -135,6 +150,7 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                             }
                         }
                         if (medicalInfo.diet.isNotEmpty()) {
+                            Spacer(modifier = Modifier.size(16.dp))
                             Text(
                                 text = "Diet",
                                 color = colorResource(id = R.color.black_icon),
@@ -147,7 +163,7 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                                     .defaultMinSize(minHeight = 80.dp),
                                 elevation = CardDefaults.cardElevation(8.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = colorResource(id = R.color.bg)
+                                    containerColor = colorResource(id = R.color.llll_blue)
                                 )
                             ) {
                                 Box(
@@ -167,6 +183,7 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                             }
                         }
                         if (medicalInfo.weight.isNotEmpty()) {
+                            Spacer(modifier = Modifier.size(16.dp))
                             Text(
                                 text = "Weight",
                                 color = colorResource(id = R.color.black_icon),
@@ -179,7 +196,7 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                                     .defaultMinSize(minHeight = 80.dp),
                                 elevation = CardDefaults.cardElevation(8.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = colorResource(id = R.color.bg)
+                                    containerColor = colorResource(id = R.color.llll_blue)
                                 )
                             ) {
                                 Box(
@@ -201,9 +218,12 @@ fun MedicalScreen(pet: Pet, events: List<Event>) {
                     }
                 }
             }
+            }
         }
 
-        EventCard(events = events)
+        Spacer(modifier = Modifier.size(16.dp))
+
+        EventCard(events = events, currentPet = pet, petViewModel = petViewModel)
 
     }
 }

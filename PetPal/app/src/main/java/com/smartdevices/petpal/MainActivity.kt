@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Debug", "Permissions denied")
                 }
             )
-            JetpackComposeTestTheme(preferenceManager) {
+            JetpackComposeTestTheme(preferenceManager.getTheme()) {
                 // Set up NavController
                 val navController = rememberNavController()
                 var startDestination = "main_screen"

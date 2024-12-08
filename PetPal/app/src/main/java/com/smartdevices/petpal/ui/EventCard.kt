@@ -1,6 +1,9 @@
 package com.smartdevices.petpal.ui
 
+import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,17 +16,29 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.petpal.R
 import com.smartdevices.petpal.db.Event
+import com.smartdevices.petpal.db.Pet
+import com.smartdevices.petpal.db.PetViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EventCard(events: List<Event>) {
+fun EventCard(events: List<Event>, currentPet: Pet, petViewModel: PetViewModel) {
+    val context = LocalContext.current
+    var showDialog by remember { mutableStateOf(false) }
+    var editDialogEvent by remember { mutableStateOf<Event?>(null) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -32,13 +47,19 @@ fun EventCard(events: List<Event>) {
         verticalArrangement = Arrangement.spacedBy(16.dp), // Spacing between cards
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        AddEventBtn { showDialog = true }
         //Spacer(modifier = Modifier.height(500.dp))
         events.forEach { event ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(), // Allow the Card to expand based on content height
-                onClick = { },
+                    .wrapContentHeight()
+                    .combinedClickable(
+                        onClick = { },
+                        onLongClick = {
+                            editDialogEvent = event
+                            showDialog = true },
+                    ),
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             ) {
@@ -120,4 +141,25 @@ fun EventCard(events: List<Event>) {
             }
         }
     }
+
+    CustomDialog(
+        showDialog = showDialog,
+        onDismissRequest = { showDialog = false },
+        content = {
+            AddEventDialog(
+                context = context,
+                onDismissRequest = {event ->
+                    showDialog = false
+                    editDialogEvent = null
+                    if (event.eventId != -1) petViewModel.deleteEventFromPet(petId = currentPet.petId, event = event)},
+                onConfirm = { event ->
+                    if (event.eventId == -1) petViewModel.addEventToPet(petId = currentPet.petId, event = event)
+                    else petViewModel.updateEvent(event = event)
+                    showDialog = false
+                    editDialogEvent = null
+                },
+                event = editDialogEvent
+            )
+        }
+    )
 }

@@ -43,6 +43,7 @@ android {
 
 dependencies {
 
+    implementation("dev.chrisbanes.haze:haze:1.1.1")
     implementation(libs.material)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.coil.compose)

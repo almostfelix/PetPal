@@ -248,10 +248,13 @@ fun EditPetScreen(
                             url = thumbnail
                         )
 
-                        petViewModel.updateMedia(updatedMedia)
-
                         // Call the update method in the ViewModel to save the pet
-                        petViewModel.updatePet(updatedPet)
+                        if (edit) {
+                            petViewModel.updateMedia(updatedMedia)
+                            petViewModel.updatePet(updatedPet)
+                        } else {
+                            petViewModel.addPetWithMedia(updatedPet, updatedMedia)
+                        }
                         petViewModel.loadPets()
                         petViewModel.getThumbnails()
                         navController.popBackStack()
@@ -563,7 +566,8 @@ fun EditPetScreen(
                 errorLabelColor = colorResource(R.color.error_red),
                 errorContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = colorResource(R.color.prim),
             )
         )
     }

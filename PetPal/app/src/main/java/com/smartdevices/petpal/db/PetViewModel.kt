@@ -131,10 +131,21 @@ class PetViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun deleteEventFromPet(event: Event) {
+    fun updateEvent(event: Event) {
         viewModelScope.launch {
             try {
-                roomDB.deleteEvent(event)
+                roomDB.addEvent(event)
+                loadEventsForPet(event.petId) // Refresh events
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
+    }
+
+    fun deleteEventFromPet(event: Event, petId: Int) {
+        viewModelScope.launch {
+            try {
+                roomDB.deleteEventFromPet(eventId = event.eventId, petId = petId)
                 loadEventsForPet(event.petId) // Refresh events
             } catch (e: Exception) {
                 handleError(e)
@@ -177,6 +188,21 @@ class PetViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun addMediasToPet(petId: Int, medias: List<Media>) {
+        viewModelScope.launch {
+            try {
+                val lastMedia = roomDB.getLastMedia()
+                val newMedias = medias.mapIndexed { index, media ->
+                    media.copy(mediaId = (lastMedia?.mediaId ?: -1) + index + 1, petId = petId)
+                }
+                newMedias.forEach { roomDB.addMedia(it) }
+                loadMediaForPet(petId) // Refresh media
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
+    }
+
     fun updateMedia(media: Media) {
         viewModelScope.launch {
             try {
@@ -188,11 +214,22 @@ class PetViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun deleteMedia(media: Media) {
+    fun deleteMedia(media: Media, petId: Int) {
         viewModelScope.launch {
             try {
-                roomDB.deleteMedia(media)
+                roomDB.deleteMediaForPet(petId = petId, mediaId = media.mediaId)
                 loadMediaForPet(media.petId) // Refresh media
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
+    }
+
+    fun deleteMedias(medias: List<Media>, petId: Int) {
+        viewModelScope.launch {
+            try {
+                medias.forEach { roomDB.deleteMediaForPet(petId = petId, mediaId = it.mediaId) }
+                loadMediaForPet(petId) // Refresh media
             } catch (e: Exception) {
                 handleError(e)
             }
