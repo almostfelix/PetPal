@@ -134,10 +134,7 @@ class MainActivity : AppCompatActivity() {
                         SettingsScreen(navController = navController)
                     }
                     composable("add_pet_screen") {
-                        AddNewPetScreen(
-                            navController = navController,
-                            petViewModel = petViewModel
-                        )
+                        EditPetScreen(petViewModel = petViewModel, navController = navController, edit = false)
                     }
 
                     composable("pet_ui_screen/{petId}") { backStackEntry ->
@@ -154,7 +151,7 @@ class MainActivity : AppCompatActivity() {
                     composable("edit_pet_screen/{petId}"){  backStackEntry ->
                         val petId = backStackEntry.arguments?.getString("petId")?.toInt()
                         petId?.let {
-                            EditPetScreen(petViewModel, petId, navController)
+                            EditPetScreen(petViewModel, petId, navController, edit = true)
                         }
                     }
 

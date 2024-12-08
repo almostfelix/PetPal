@@ -324,8 +324,8 @@ fun CardMainScreen(pet: Pet, thumbnailList: List<Media>, navController: NavContr
                         val state = painter.state
 
                         val transition by animateFloatAsState(
-                            targetValue = if (state is AsyncImagePainter.State.Success) 1f else 0f,
-                            animationSpec = tween(durationMillis = 1000)
+                            targetValue = if (state is AsyncImagePainter.State.Success) 1f else if (state is AsyncImagePainter.State.Loading) 0f else 1f,
+                            animationSpec = tween(durationMillis = 300)
                         )
                         Image(
                             painter = painter,

@@ -65,6 +65,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
@@ -83,27 +84,25 @@ import kotlin.math.min
 @Composable
 fun EditPetScreen(
     petViewModel: PetViewModel,
-    petId: Int,
-    navController: NavController
+    petId: Int = -1,
+    navController: NavController,
+    edit: Boolean = true
 ) {
     val currentContext = LocalContext.current
     petViewModel.loadMediaForPet(petId)
-    val pet = petViewModel.petsList.collectAsState().value.find { it.petId == petId }
-    var media = petViewModel.mediaList.collectAsState().value.find { it.petId == petId && it.type == "thumbnail" }
+    val pet = petViewModel.petsList.collectAsState().value.find { it.petId == petId } ?: Pet()
+    var media =
+        petViewModel.mediaList.collectAsState().value.find { it.petId == petId && it.type == "thumbnail" }
 
-    // Make sure the pet is found
-    if (pet == null) {
-        // If the pet is not found, you can show an error or return a message
-        return
-    }
 
-    var name by remember { mutableStateOf(pet.name) }
-    var species by remember { mutableStateOf(pet.species) }
-    var breed by remember { mutableStateOf(pet.breed) }
-    var birthDate by remember { mutableStateOf(pet.birthDate) }
-    var diet by remember { mutableStateOf(pet.medicalInfo.diet) }
-    var weight by remember { mutableStateOf(pet.medicalInfo.weight) }
-    var thumbnail by remember { mutableStateOf(media?.url ?: "") }
+    var name by remember { mutableStateOf(if (edit) pet.name else "") }
+    var species by remember { mutableStateOf(if (edit) pet.species else "") }
+    var breed by remember { mutableStateOf(if (edit) pet.breed else "") }
+    var birthDate by remember { mutableStateOf(if (edit) pet.birthDate else "") }
+    var diet by remember { mutableStateOf(if (edit) pet.medicalInfo.diet else "") }
+    var weight by remember { mutableStateOf(if (edit) pet.medicalInfo.weight else "") }
+    var thumbnail by remember { mutableStateOf(if (edit) media?.url ?: "" else "") }
+    var rotationAngle by remember { mutableStateOf(0f) }
 
     // Initialize the image picker launcher
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -134,7 +133,37 @@ fun EditPetScreen(
             .fillMaxSize()
             .background(color = colorResource(id = R.color.bg))
     ) {
-        TopAppBar(navController = navController)
+        TopAppBar(navController = navController, petName = if (edit) pet.name else "Add Pet",
+            onSave = {
+                // Create the updated pet object
+                val updatedPet = pet.copy(
+                    name = name,
+                    species = species,
+                    breed = breed,
+                    birthDate = birthDate,
+                    medicalInfo = pet.medicalInfo.copy(
+                        allergies = allergies,
+                        diet = diet,
+                        weight = weight
+                    )
+                )
+                val updatedMedia = Media(
+                    petId = pet.petId,
+                    type = "thumbnail",
+                    url = thumbnail
+                )
+
+                // Call the update method in the ViewModel to save the pet
+                if (edit) {
+                    petViewModel.updateMedia(updatedMedia)
+                    petViewModel.updatePet(updatedPet)
+                } else {
+                    petViewModel.addPetWithMedia(updatedPet, updatedMedia)
+                }
+                petViewModel.loadPets()
+                petViewModel.getThumbnails()
+                navController.popBackStack()
+            })
 
         LazyColumn(
             modifier = Modifier
@@ -154,7 +183,7 @@ fun EditPetScreen(
             item {
                 Button(
                     onClick = {
-                    imagePickerLauncher.launch("image/*")
+                        imagePickerLauncher.launch("image/*")
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.prim))
@@ -214,7 +243,7 @@ fun EditPetScreen(
                             )
                         )
                         val updatedMedia = Media(
-                            petId = petId,
+                            petId = pet.petId,
                             type = "thumbnail",
                             url = thumbnail
                         )
@@ -223,6 +252,8 @@ fun EditPetScreen(
 
                         // Call the update method in the ViewModel to save the pet
                         petViewModel.updatePet(updatedPet)
+                        petViewModel.loadPets()
+                        petViewModel.getThumbnails()
                         navController.popBackStack()
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -234,402 +265,395 @@ fun EditPetScreen(
             item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
+
 }
 
-@Composable
-fun BirthDatePicker(
-    label: String,
-    selectedDate: String,
-    onDateSelected: (String) -> Unit
-) {
-    var showDatePicker by remember { mutableStateOf(false) }
+    @Composable
+    fun BirthDatePicker(
+        label: String,
+        selectedDate: String,
+        onDateSelected: (String) -> Unit
+    ) {
+        var showDatePicker by remember { mutableStateOf(false) }
 
-    // Open the Material Date Picker
-    if (showDatePicker) {
-        val datePicker = remember {
-            MaterialDatePicker.Builder.datePicker()
-                .setTitleText("Select Date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-                .build()
+        // Open the Material Date Picker
+        if (showDatePicker) {
+            val datePicker = remember {
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select Date")
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+            }
+
+            datePicker.addOnPositiveButtonClickListener { timestamp ->
+                val date = Instant.ofEpochMilli(timestamp)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+                onDateSelected(date.toString()) // Return formatted date
+                showDatePicker = false
+            }
+
+            datePicker.addOnDismissListener {
+                showDatePicker = false
+            }
+
+            // Show DatePicker
+            datePicker.show(
+                (LocalContext.current as AppCompatActivity).supportFragmentManager,
+                "DatePicker"
+            )
         }
 
-        datePicker.addOnPositiveButtonClickListener { timestamp ->
-            val date = Instant.ofEpochMilli(timestamp)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-            onDateSelected(date.toString()) // Return formatted date
-            showDatePicker = false
-        }
-
-        datePicker.addOnDismissListener {
-            showDatePicker = false
-        }
-
-        // Show DatePicker
-        datePicker.show(
-            (LocalContext.current as AppCompatActivity).supportFragmentManager,
-            "DatePicker"
+        OutlinedTextField(
+            value = selectedDate,
+            onValueChange = {},
+            label = { Text(label) },
+            modifier = Modifier.fillMaxWidth(),
+            readOnly = true, // Make it read-only to ensure users interact via the picker
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = true }) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_calendar_month_32),
+                        contentDescription = "Select Date",
+                        tint = colorResource(R.color.prim)
+                    )
+                }
+            },
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(R.color.black_icon),
+                unfocusedTextColor = colorResource(R.color.black_icon),
+                focusedLabelColor = colorResource(R.color.black_icon),
+                unfocusedLabelColor = colorResource(R.color.black_icon),
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            )
         )
     }
 
-    OutlinedTextField(
-        value = selectedDate,
-        onValueChange = {},
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
-        readOnly = true, // Make it read-only to ensure users interact via the picker
-        trailingIcon = {
-            IconButton(onClick = { showDatePicker = true }) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_calendar_month_32),
-                    contentDescription = "Select Date",
-                    tint = colorResource(R.color.prim)
-                )
-            }
-        },
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = colorResource(R.color.black_icon),
-            unfocusedTextColor = colorResource(R.color.black_icon),
-            focusedLabelColor = colorResource(R.color.black_icon),
-            unfocusedLabelColor = colorResource(R.color.black_icon),
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
-        )
-    )
-}
 
-
-@Composable
-fun CardMainScreenPreview(media: String, name: String, breed: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Card(
+    @Composable
+    fun CardMainScreenPreview(media: String, name: String, breed: String) {
+        Row(
             modifier = Modifier
-                .width(350.dp)
-                .height(235.dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
+            Card(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(0.dp),
+                    .width(350.dp)
+                    .height(235.dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
             ) {
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.TopCenter),
-                    verticalArrangement = Arrangement.Top
+                        .fillMaxSize()
+                        .padding(0.dp),
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .align(Alignment.TopCenter),
+                        verticalArrangement = Arrangement.Top
                     ) {
-                        // Left column for text information, taking up more space
-                        Column(
+                        Row(
                             modifier = Modifier
-                                .weight(1f) // Occupies most of the row width
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
+                            // Left column for text information, taking up more space
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f) // Occupies most of the row width
                             ) {
-                                Text(
-                                    text = name,
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                )
-                            }
-                            Row(
-                                horizontalArrangement = Arrangement.Start,
-                            ) {
-                                Text(
-                                    text = breed,
-                                    fontSize = 12.sp,
-                                )
-                            }
-                        }
-
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_arrow_forward_ios_32),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(24.dp)
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp))
-                            .background(Color.Transparent)
-                            .innerShadow(
-                                color = Color.Black,
-                                cornersRadius = 0.dp,
-                                spread = 3.dp,
-                                blur = 16.dp,
-                                offsetY = 1.dp,
-                                offsetX = 0.dp,
-                                shadowTop = true,
-                                shadowBottom = false,
-                                shadowLeft = false,
-                                shadowRight = false
-                            ),
-                    ) {
-                        val painter = rememberAsyncImagePainter(media)
-                        val state = painter.state
-
-                        val transition by animateFloatAsState(
-                            targetValue = if (state is AsyncImagePainter.State.Success) 1f else 0f,
-                            animationSpec = tween(durationMillis = 1000)
-                        )
-                        Image(
-                            painter = painter,
-                            contentDescription = "custom transition based on painter state",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .scale(.8f + (.2f * transition))
-                                .graphicsLayer { rotationX = (1f - transition) * 5f }
-                                .alpha(min(1f, transition / .2f))
-                        )
-                        /*
-                        AsyncImage(
-                            model = media,
-                            contentDescription = "Selected Pet Image",
-                            modifier = Modifier
-                                .fillMaxSize(),
-                            contentScale = ContentScale.Crop,
-                            placeholder = ColorPainter(colorResource(id = R.color.bg)),
-                        )*/
-
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-
-@Composable
-fun AllergyManager(
-    petViewModel: PetViewModel,
-    petId: Int,
-    allergyInput: String,
-    setAllergyInput: (String) -> Unit,
-    allergies: MutableList<String>
-) {
-    Column {
-        // Input field for new allergy
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = allergyInput,
-                onValueChange = { setAllergyInput(it) },
-                label = { Text("Add an allergy") },
-                modifier = Modifier.weight(1f),
-                colors = TextFieldDefaults.colors(
-                    focusedTextColor = colorResource(R.color.black_icon),
-                    unfocusedTextColor = colorResource(R.color.black_icon),
-                    focusedLabelColor = colorResource(R.color.black_icon),
-                    unfocusedLabelColor = colorResource(R.color.black_icon),
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent
-                ),
-                trailingIcon = {
-                    AnimatedVisibility(
-                        visible = allergyInput.isNotBlank(),
-                        enter = scaleIn(
-                            animationSpec = keyframes {
-                                durationMillis = 500
-                                0.0f at 0 // Start at 0% scale
-                                1.2f at 300 // Overshoot to 120% scale
-                                1.0f at 500 // Settle at 100% scale
-                            }
-                        ),
-                        exit = fadeOut(animationSpec = tween(durationMillis = 300)) // Simple fade-out
-                    ) {
-                        IconButton(
-                            onClick = {
-                                if (allergyInput.isNotBlank()) {
-                                    allergies.add(allergyInput.trim()) // Add allergy to the list
-                                    setAllergyInput("") // Clear input field
+                                Row(
+                                    horizontalArrangement = Arrangement.Start,
+                                ) {
+                                    Text(
+                                        text = name,
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                    )
+                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.Start,
+                                ) {
+                                    Text(
+                                        text = breed,
+                                        fontSize = 12.sp,
+                                    )
                                 }
                             }
-                        ) {
-                            Box(
+
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_arrow_forward_ios_32),
+                                contentDescription = null,
                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .background(
-                                        color = colorResource(R.color.prim),
-                                        shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
+                                    .size(24.dp)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp))
+                                .background(Color.Transparent),
+                        ) {
+                            val imageLoader = ImageLoader(LocalContext.current).newBuilder()
+                                .allowHardware(true)
+                                .crossfade(true)
+                                .build()
+
+                            val painter = rememberAsyncImagePainter(model = media, imageLoader = imageLoader)
+                            val state = painter.state
+
+                            val transition by animateFloatAsState(
+                                targetValue = if (state is AsyncImagePainter.State.Success) 1f else 0f,
+                                animationSpec = tween(durationMillis = 1000)
+                            )
+                            Image(
+                                painter = painter,
+                                contentDescription = "custom transition based on painter state",
+                                contentScale = ContentScale.FillWidth,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .scale(.8f + (.2f * transition))
+                                    .graphicsLayer {
+                                        rotationX = (1f - transition) * 5f
+                                    }
+                                    .alpha(min(1f, transition / .2f))
+                            )
+                            /*
+                            AsyncImage(
+                                model = media,
+                                contentDescription = "Selected Pet Image",
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                                placeholder = ColorPainter(colorResource(id = R.color.bg)),
+                            )*/
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    @Composable
+    fun AllergyManager(
+        petViewModel: PetViewModel,
+        petId: Int,
+        allergyInput: String,
+        setAllergyInput: (String) -> Unit,
+        allergies: MutableList<String>
+    ) {
+        Column {
+            // Input field for new allergy
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                OutlinedTextField(
+                    value = allergyInput,
+                    onValueChange = { setAllergyInput(it) },
+                    label = { Text("Add an allergy") },
+                    modifier = Modifier.weight(1f),
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = colorResource(R.color.black_icon),
+                        unfocusedTextColor = colorResource(R.color.black_icon),
+                        focusedLabelColor = colorResource(R.color.black_icon),
+                        unfocusedLabelColor = colorResource(R.color.black_icon),
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent
+                    ),
+                    trailingIcon = {
+                        AnimatedVisibility(
+                            visible = allergyInput.isNotBlank(),
+                            enter = scaleIn(
+                                animationSpec = keyframes {
+                                    durationMillis = 500
+                                    0.0f at 0 // Start at 0% scale
+                                    1.2f at 300 // Overshoot to 120% scale
+                                    1.0f at 500 // Settle at 100% scale
+                                }
+                            ),
+                            exit = fadeOut(animationSpec = tween(durationMillis = 300)) // Simple fade-out
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    if (allergyInput.isNotBlank()) {
+                                        allergies.add(allergyInput.trim()) // Add allergy to the list
+                                        setAllergyInput("") // Clear input field
+                                    }
+                                }
                             ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.baseline_add_32),
-                                    contentDescription = "Add allergy",
-                                    tint = colorResource(R.color.bg),
-                                    modifier = Modifier.size(24.dp)
-                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(
+                                            color = colorResource(R.color.prim),
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.baseline_add_32),
+                                        contentDescription = "Add allergy",
+                                        tint = colorResource(R.color.bg),
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
                             }
                         }
+
+
                     }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
 
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // List of allergies
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                allergies.forEach { allergy ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = allergy,
+                            modifier = Modifier.weight(1f)
+                        )
+                        IconButton(
+                            onClick = {
+                                allergies.remove(allergy) // Remove allergy from the list
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_remove_24),
+                                contentDescription = "Remove allergy",
+                                tint = colorResource(R.color.g_red),
+                            )
+                        }
+                    }
                 }
-            )
-            Spacer(modifier = Modifier.width(8.dp))
+            }
         }
+    }
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // List of allergies
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    @Composable
+    fun OutTextF(value: String, onValueChange: (String) -> Unit, label: String) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(R.color.black_icon),
+                unfocusedTextColor = colorResource(R.color.black_icon),
+                errorIndicatorColor = Color.Transparent,
+                focusedLabelColor = colorResource(R.color.black_icon),
+                unfocusedLabelColor = colorResource(R.color.black_icon),
+                errorLabelColor = colorResource(R.color.error_red),
+                errorContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            )
+        )
+    }
+
+    @Composable
+    fun TopAppBar(navController: NavController, petName: String = "Edit Pet",
+                  onSave: () -> Unit = {}) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = colorResource(id = R.color.bg))
+                .padding(12.dp, 24.dp, 16.dp, 0.dp)
+                .height(52.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            allergies.forEach { allergy ->
+            // Left Card
+            Card(
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 0.dp
+                ),
+                shape = RoundedCornerShape(25.dp),
+                onClick = { navController.popBackStack() }
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_arrow_back_32),
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.black_icon),
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+
+            // Middle Card
+            Card(
+                modifier = Modifier
+                    .weight(1f) // Allow this card to take up remaining space
+                    .height(42.dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                shape = RoundedCornerShape(21.dp)
+            ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(horizontal = 12.dp)
+                        .align(Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = allergy,
-                        modifier = Modifier.weight(1f)
+                        text = petName,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
                     )
-                    IconButton(
-                        onClick = {
-                            allergies.remove(allergy) // Remove allergy from the list
-                        }
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.baseline_remove_24),
-                            contentDescription = "Remove allergy",
-                            tint = colorResource(R.color.g_red),
-                        )
-                    }
+                }
+            }
+
+            // Right Card
+            Card(
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 8.dp,
+                    pressedElevation = 0.dp
+                ),
+                shape = RoundedCornerShape(25.dp),
+                onClick = onSave
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.round_check_32),
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.prim),
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
         }
     }
-}
-
-
-
-
-
-@Composable
-fun OutTextF(value: String, onValueChange: (String) -> Unit, label: String) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = colorResource(R.color.black_icon),
-            unfocusedTextColor = colorResource(R.color.black_icon),
-            errorIndicatorColor = Color.Transparent,
-            focusedLabelColor = colorResource(R.color.black_icon),
-            unfocusedLabelColor = colorResource(R.color.black_icon),
-            errorLabelColor = colorResource(R.color.error_red),
-            errorContainerColor = Color.Transparent,
-            focusedContainerColor = Color.Transparent,
-            unfocusedContainerColor = Color.Transparent
-        )
-    )
-}
-
-@Composable
-fun TopAppBar(navController: NavController){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = colorResource(id = R.color.bg))
-            .padding(12.dp, 24.dp, 16.dp, 0.dp)
-            .height(52.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Left Card
-        Card(
-            modifier = Modifier
-                .width(40.dp)
-                .height(40.dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp,
-                pressedElevation = 0.dp
-            ),
-            shape = RoundedCornerShape(25.dp),
-            onClick = { navController.popBackStack() }
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_arrow_back_32),
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.black_icon),
-                    modifier = Modifier.size(32.dp)
-                )
-            }
-        }
-
-        // Middle Card
-        Card(
-            modifier = Modifier
-                .weight(1f) // Allow this card to take up remaining space
-                .height(42.dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-            shape = RoundedCornerShape(21.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(horizontal = 12.dp)
-                    .align(Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Edit",
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1
-                )
-            }
-        }
-
-        // Right Card
-        Card(
-            modifier = Modifier
-                .width(40.dp)
-                .height(40.dp),
-            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp,
-                pressedElevation = 0.dp
-            ),
-            shape = RoundedCornerShape(25.dp),
-            onClick = { }
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_edit_32),
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.prim),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-    }
-}
