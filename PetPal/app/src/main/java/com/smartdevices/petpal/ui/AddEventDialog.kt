@@ -75,11 +75,11 @@ fun AddEventDialog(
 
     Log.d("AddEventDialog", "event: $event")
     // State holders for your input fields
-    var title by remember { mutableStateOf(event?.title?:"") }
-    var description by remember { mutableStateOf(event?.description?:"") }
-    var date by remember { mutableStateOf(event?.date?:"") }
-    var time by remember { mutableStateOf(event?.time?:"") }
-    var type by remember { mutableStateOf(event?.type?:"") }
+    var title by remember { mutableStateOf(event?.title ?: "") }
+    var description by remember { mutableStateOf(event?.description ?: "") }
+    var date by remember { mutableStateOf(event?.date ?: "") }
+    var time by remember { mutableStateOf(event?.time ?: "") }
+    var type by remember { mutableStateOf(event?.type ?: "") }
     var isGeneral by remember { mutableStateOf(true) }
     if (event != null && type == "general") {
         isGeneral = true
@@ -110,316 +110,322 @@ fun AddEventDialog(
             ) {
                 // Title
                 Text(
-                    text = "New Event",
-                    modifier = Modifier.align(Alignment.CenterStart)
-                )
-                if (event != null) {
-                    Card(
-                        modifier = Modifier
-                            .clickable { onDismissRequest(event) }
-                            .size(32.dp)
-                            .align(Alignment.CenterEnd),
-                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.g_red)),
-                    ) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.round_delete_forever_32),
-                                contentDescription = "Delete",
-                                tint = colorResource(id = R.color.bg),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Input Fields
-            Column {
-                // Title Input
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(R.color.black_icon),
-                        unfocusedTextColor = colorResource(R.color.black_icon),
-                        errorIndicatorColor = Color.Transparent,
-                        focusedLabelColor = colorResource(R.color.black_icon),
-                        unfocusedLabelColor = colorResource(R.color.black_icon),
-                        errorLabelColor = colorResource(R.color.error_red),
-                        errorContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = colorResource(R.color.prim),
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Description Input
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Description") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(R.color.black_icon),
-                        unfocusedTextColor = colorResource(R.color.black_icon),
-                        errorIndicatorColor = Color.Transparent,
-                        focusedLabelColor = colorResource(R.color.black_icon),
-                        unfocusedLabelColor = colorResource(R.color.black_icon),
-                        errorLabelColor = colorResource(R.color.error_red),
-                        errorContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = colorResource(R.color.prim),
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = date,
-                    onValueChange = { date = it },
-                    label = { Text("Date") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(R.color.black_icon),
-                        unfocusedTextColor = colorResource(R.color.black_icon),
-                        errorIndicatorColor = Color.Transparent,
-                        focusedLabelColor = colorResource(R.color.black_icon),
-                        unfocusedLabelColor = colorResource(R.color.black_icon),
-                        errorLabelColor = colorResource(R.color.error_red),
-                        errorContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = colorResource(R.color.prim),
-                    ),
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.outline_calendar_month_32),
-                            contentDescription = "Date Picker",
-                            tint = colorResource(id = R.color.prim),
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-                                    val c = Calendar.getInstance()
-                                    val year = c.get(Calendar.YEAR)
-                                    val month = c.get(Calendar.MONTH)
-                                    val day = c.get(Calendar.DAY_OF_MONTH)
-
-                                    DatePickerDialog(
-                                        context,
-                                        { _, year, month, day ->
-                                            date = String.format("%04d-%02d-%02d", year, month + 1, day)
-                                            // Update the date field
-                                        },
-                                        year,
-                                        month,
-                                        day
-                                    ).show()
-                                }
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                // +1 day, +1 week buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            val c = Calendar.getInstance()
-                            val year = c.get(Calendar.YEAR)
-                            val month = c.get(Calendar.MONTH)
-                            val day = c.get(Calendar.DAY_OF_MONTH)
-                            c.set(year, month, day + 1)
-                            date = String.format("%04d-%02d-%02d", year, month + 1, day + 1)
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonColors(
-                            containerColor = colorResource(id = R.color.prim),
-                            contentColor = colorResource(id = R.color.bg),
-                            disabledContainerColor = colorResource(id = R.color.prim),
-                            disabledContentColor = colorResource(id = R.color.bg),
-                        )
-                    ) {
-                        Text("+1 Day")
-                    }
-                    Button(
-                        onClick = {
-                            val c = Calendar.getInstance()
-                            val year = c.get(Calendar.YEAR)
-                            val month = c.get(Calendar.MONTH)
-                            val day = c.get(Calendar.DAY_OF_MONTH)
-                            c.set(year, month, day + 7)
-                            date = String.format("%04d-%02d-%02d", year, month + 1, day + 7)
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonColors(
-                            containerColor = colorResource(id = R.color.prim),
-                            contentColor = colorResource(id = R.color.bg),
-                            disabledContainerColor = colorResource(id = R.color.prim),
-                            disabledContentColor = colorResource(id = R.color.bg),
-                        )
-                    ) {
-                        Text("+1 Week")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = time,
-                    onValueChange = { time = it },
-                    label = { Text("Time") },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = TextFieldDefaults.colors(
-                        focusedTextColor = colorResource(R.color.black_icon),
-                        unfocusedTextColor = colorResource(R.color.black_icon),
-                        errorIndicatorColor = Color.Transparent,
-                        focusedLabelColor = colorResource(R.color.black_icon),
-                        unfocusedLabelColor = colorResource(R.color.black_icon),
-                        errorLabelColor = colorResource(R.color.error_red),
-                        errorContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = colorResource(R.color.prim),
-                    ),
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_access_time_32),
-                            contentDescription = "Time Picker",
-                            tint = colorResource(id = R.color.prim),
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-                                    val c = Calendar.getInstance()
-                                    val hour = c.get(Calendar.HOUR_OF_DAY)
-                                    val minute = c.get(Calendar.MINUTE)
-
-                                    TimePickerDialog(
-                                        context,
-                                        { _, hourOfDay, minute ->
-                                            time = String.format("%02d:%02d", hourOfDay, minute)
-                                            // Update the time field
-                                        },
-                                        hour,
-                                        minute,
-                                        true
-                                    ).show()
-                                }
-                        )
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Card(
-                    modifier = Modifier,
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg))
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp, 8.dp, 8.dp, 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    ) {
-                        SelectableCard(
-                            text = "General",
-                            isSelected = isGeneral,
-                            onClick = {
-                                isGeneral = true
-                                type = "General"
-                            },
-                            modifier = Modifier.weight(1f),
-                            selectedColor = colorResource(id = R.color.prim),
-                            unselectedColor = colorResource(id = R.color.bg),
-                            selectedTextColor = colorResource(id = R.color.bg),
-                            unselectedTextColor = colorResource(id = R.color.prim),
-                            borderColor = colorResource(id = R.color.prim)
-                        )
-                        SelectableCard(
-                            text = "Medical",
-                            isSelected = !isGeneral,
-                            onClick = {
-                                isGeneral = false
-                                type = "Medical"
-                            },
-                            modifier = Modifier.weight(1f),
-                            selectedColor = colorResource(id = R.color.prim),
-                            unselectedColor = colorResource(id = R.color.bg),
-                            selectedTextColor = colorResource(id = R.color.bg),
-                            unselectedTextColor = colorResource(id = R.color.prim),
-                            borderColor = colorResource(id = R.color.prim)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Action Buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    text = if (event != null)
+                        "Edit Event"
+                    else
+                        "New Event"
+                    ,
+        modifier = Modifier.align(Alignment.CenterStart)
+        )
+        if (event != null) {
+            Card(
+                modifier = Modifier
+                    .clickable { onDismissRequest(event) }
+                    .size(32.dp)
+                    .align(Alignment.CenterEnd),
+                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.g_red)),
             ) {
-                Button(
-                    onClick = {
-                        onDismissRequest(Event())
-                    },
-                    modifier = Modifier
-                        .weight(1f),
-                    colors = ButtonColors(
-                        containerColor = colorResource(id = R.color.accent2),
-                        contentColor = colorResource(id = R.color.bg),
-                        disabledContainerColor = colorResource(id = R.color.prim),
-                        disabledContentColor = colorResource(id = R.color.bg),
-                    )
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("Cancel")
-                }
-                Button(
-                    modifier = Modifier
-                        .weight(1f),
-                    onClick = {
-                        onConfirm(if (event == null) Event(
-                            title = title,
-                            description = description,
-                            date = date,
-                            time = time,
-                            type = type
-                        ) else Event(
-                            eventId = event.eventId,
-                            petId = event.petId,
-                            title = title,
-                            description = description,
-                            date = date,
-                            time = time,
-                            type = type
-                        ))
-                        onDismissRequest(Event())
-                    },
-                    colors = ButtonColors(
-                        containerColor = colorResource(id = R.color.prim),
-                        contentColor = colorResource(id = R.color.bg),
-                        disabledContainerColor = colorResource(id = R.color.prim),
-                        disabledContentColor = colorResource(id = R.color.bg),
+                    Icon(
+                        painter = painterResource(id = R.drawable.round_delete_forever_32),
+                        contentDescription = "Delete",
+                        tint = colorResource(id = R.color.bg),
+                        modifier = Modifier.size(24.dp)
                     )
-                ) {
-                    Text(if (event == null) "Add" else "Save")
                 }
             }
         }
     }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Input Fields
+    Column {
+        // Title Input
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Title") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(R.color.black_icon),
+                unfocusedTextColor = colorResource(R.color.black_icon),
+                errorIndicatorColor = Color.Transparent,
+                focusedLabelColor = colorResource(R.color.black_icon),
+                unfocusedLabelColor = colorResource(R.color.black_icon),
+                errorLabelColor = colorResource(R.color.error_red),
+                errorContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = colorResource(R.color.prim),
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Description Input
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Description") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(R.color.black_icon),
+                unfocusedTextColor = colorResource(R.color.black_icon),
+                errorIndicatorColor = Color.Transparent,
+                focusedLabelColor = colorResource(R.color.black_icon),
+                unfocusedLabelColor = colorResource(R.color.black_icon),
+                errorLabelColor = colorResource(R.color.error_red),
+                errorContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = colorResource(R.color.prim),
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = date,
+            onValueChange = { date = it },
+            label = { Text("Date") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(R.color.black_icon),
+                unfocusedTextColor = colorResource(R.color.black_icon),
+                errorIndicatorColor = Color.Transparent,
+                focusedLabelColor = colorResource(R.color.black_icon),
+                unfocusedLabelColor = colorResource(R.color.black_icon),
+                errorLabelColor = colorResource(R.color.error_red),
+                errorContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = colorResource(R.color.prim),
+            ),
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_calendar_month_32),
+                    contentDescription = "Date Picker",
+                    tint = colorResource(id = R.color.prim),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            val c = Calendar.getInstance()
+                            val year = c.get(Calendar.YEAR)
+                            val month = c.get(Calendar.MONTH)
+                            val day = c.get(Calendar.DAY_OF_MONTH)
+
+                            DatePickerDialog(
+                                context,
+                                { _, year, month, day ->
+                                    date = String.format("%04d-%02d-%02d", year, month + 1, day)
+                                    // Update the date field
+                                },
+                                year,
+                                month,
+                                day
+                            ).show()
+                        }
+                )
+            }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        // +1 day, +1 week buttons
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Button(
+                onClick = {
+                    val c = Calendar.getInstance()
+                    val year = c.get(Calendar.YEAR)
+                    val month = c.get(Calendar.MONTH)
+                    val day = c.get(Calendar.DAY_OF_MONTH)
+                    c.set(year, month, day + 1)
+                    date = String.format("%04d-%02d-%02d", year, month + 1, day + 1)
+                },
+                modifier = Modifier.weight(1f),
+                colors = ButtonColors(
+                    containerColor = colorResource(id = R.color.prim),
+                    contentColor = colorResource(id = R.color.bg),
+                    disabledContainerColor = colorResource(id = R.color.prim),
+                    disabledContentColor = colorResource(id = R.color.bg),
+                )
+            ) {
+                Text("+1 Day")
+            }
+            Button(
+                onClick = {
+                    val c = Calendar.getInstance()
+                    val year = c.get(Calendar.YEAR)
+                    val month = c.get(Calendar.MONTH)
+                    val day = c.get(Calendar.DAY_OF_MONTH)
+                    c.set(year, month, day + 7)
+                    date = String.format("%04d-%02d-%02d", year, month + 1, day + 7)
+                },
+                modifier = Modifier.weight(1f),
+                colors = ButtonColors(
+                    containerColor = colorResource(id = R.color.prim),
+                    contentColor = colorResource(id = R.color.bg),
+                    disabledContainerColor = colorResource(id = R.color.prim),
+                    disabledContentColor = colorResource(id = R.color.bg),
+                )
+            ) {
+                Text("+1 Week")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = time,
+            onValueChange = { time = it },
+            label = { Text("Time") },
+            modifier = Modifier.fillMaxWidth(),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = colorResource(R.color.black_icon),
+                unfocusedTextColor = colorResource(R.color.black_icon),
+                errorIndicatorColor = Color.Transparent,
+                focusedLabelColor = colorResource(R.color.black_icon),
+                unfocusedLabelColor = colorResource(R.color.black_icon),
+                errorLabelColor = colorResource(R.color.error_red),
+                errorContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = colorResource(R.color.prim),
+            ),
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_access_time_32),
+                    contentDescription = "Time Picker",
+                    tint = colorResource(id = R.color.prim),
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            val c = Calendar.getInstance()
+                            val hour = c.get(Calendar.HOUR_OF_DAY)
+                            val minute = c.get(Calendar.MINUTE)
+
+                            TimePickerDialog(
+                                context,
+                                { _, hourOfDay, minute ->
+                                    time = String.format("%02d:%02d", hourOfDay, minute)
+                                    // Update the time field
+                                },
+                                hour,
+                                minute,
+                                true
+                            ).show()
+                        }
+                )
+            }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier,
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg))
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp, 8.dp, 8.dp, 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                SelectableCard(
+                    text = "General",
+                    isSelected = isGeneral,
+                    onClick = {
+                        isGeneral = true
+                        type = "General"
+                    },
+                    modifier = Modifier.weight(1f),
+                    selectedColor = colorResource(id = R.color.prim),
+                    unselectedColor = colorResource(id = R.color.bg),
+                    selectedTextColor = colorResource(id = R.color.bg),
+                    unselectedTextColor = colorResource(id = R.color.prim),
+                    borderColor = colorResource(id = R.color.prim)
+                )
+                SelectableCard(
+                    text = "Medical",
+                    isSelected = !isGeneral,
+                    onClick = {
+                        isGeneral = false
+                        type = "Medical"
+                    },
+                    modifier = Modifier.weight(1f),
+                    selectedColor = colorResource(id = R.color.prim),
+                    unselectedColor = colorResource(id = R.color.bg),
+                    selectedTextColor = colorResource(id = R.color.bg),
+                    unselectedTextColor = colorResource(id = R.color.prim),
+                    borderColor = colorResource(id = R.color.prim)
+                )
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    // Action Buttons
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Button(
+            onClick = {
+                onDismissRequest(Event())
+            },
+            modifier = Modifier
+                .weight(1f),
+            colors = ButtonColors(
+                containerColor = colorResource(id = R.color.accent2),
+                contentColor = colorResource(id = R.color.bg),
+                disabledContainerColor = colorResource(id = R.color.prim),
+                disabledContentColor = colorResource(id = R.color.bg),
+            )
+        ) {
+            Text("Cancel")
+        }
+        Button(
+            modifier = Modifier
+                .weight(1f),
+            onClick = {
+                onConfirm(
+                    if (event == null) Event(
+                        title = title,
+                        description = description,
+                        date = date,
+                        time = time,
+                        type = type
+                    ) else Event(
+                        eventId = event.eventId,
+                        petId = event.petId,
+                        title = title,
+                        description = description,
+                        date = date,
+                        time = time,
+                        type = type
+                    )
+                )
+                onDismissRequest(Event())
+            },
+            colors = ButtonColors(
+                containerColor = colorResource(id = R.color.prim),
+                contentColor = colorResource(id = R.color.bg),
+                disabledContainerColor = colorResource(id = R.color.prim),
+                disabledContentColor = colorResource(id = R.color.bg),
+            )
+        ) {
+            Text(if (event == null) "Add" else "Save")
+        }
+    }
+}
+}
 }
 
 @Composable
