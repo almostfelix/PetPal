@@ -328,7 +328,8 @@ fun EditPetScreen(
                 focusedLabelColor = colorResource(R.color.black_icon),
                 unfocusedLabelColor = colorResource(R.color.black_icon),
                 focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = colorResource(R.color.prim)
             )
         )
     }
@@ -469,7 +470,8 @@ fun EditPetScreen(
                         focusedLabelColor = colorResource(R.color.black_icon),
                         unfocusedLabelColor = colorResource(R.color.black_icon),
                         focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = colorResource(R.color.prim)
                     ),
                     trailingIcon = {
                         AnimatedVisibility(
