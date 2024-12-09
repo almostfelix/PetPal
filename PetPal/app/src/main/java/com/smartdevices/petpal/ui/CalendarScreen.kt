@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -49,7 +50,13 @@ fun CalendarPreview() {
 }
 
 @Composable
-fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, currentMonth: MutableState<YearMonth>, modifier: Modifier) {
+fun CalendarScreen(
+    pet: Pet,
+    eventList: List<Event>,
+    mediaList: List<Media>,
+    currentMonth: MutableState<YearMonth>,
+    modifier: Modifier
+) {
     // Correct initialization of currentMonth using mutableStateOf
 
     // Get the days in the current month and the first day of the week
@@ -84,11 +91,14 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
                     text = currentMonth.value.month.getDisplayName(
                         TextStyle.FULL,
                         Locale.getDefault()
+
                     ).replaceFirstChar { it.uppercase() } + " " + currentMonth.value.year,
                     modifier = Modifier
                         .height(40.dp)
                         .wrapContentHeight(align = Alignment.CenterVertically)
                         .padding(bottom = 0.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
                 )
                 Icon(
                     painter = painterResource(R.drawable.baseline_arrow_forward_ios_32),
@@ -121,7 +131,7 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
                     tint = colorResource(id = R.color.prim)
                 )
 
-                Spacer(modifier = Modifier.width(8.dp)) // Add spacing between icons if needed
+                Spacer(modifier = Modifier.width(20.dp)) // Add spacing between icons if needed
 
                 // Next Month Icon
                 Icon(
@@ -142,7 +152,12 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
         // Weekday Headers
         Row(modifier = Modifier.fillMaxWidth()) {
             listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").forEach { day ->
-                Text(text = day, color = colorResource(R.color.disabled), modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
+                Text(
+                    text = day,
+                    color = colorResource(R.color.disabled),
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
             }
         }
 
@@ -156,13 +171,15 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
             content = {
                 // Empty cells for days before the first day of the month
                 items(firstDayOfWeek) {
-                    Box(modifier = Modifier.size(32.dp))
+                    Box(modifier = Modifier.size(40.dp))
                 }
 
                 // Actual days of the month
                 items(days) { day ->
                     // Create a LocalDate for the current month and the current day
-                    val dayString = LocalDate.of(currentMonth.value.year, currentMonth.value.month, day).toString()
+                    val dayString =
+                        LocalDate.of(currentMonth.value.year, currentMonth.value.month, day)
+                            .toString()
 
                     // Check if this day has an event
                     val eventForDay = eventList.find { it.date == dayString }
@@ -170,13 +187,13 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
 
                     Box(
                         modifier = Modifier
-                            .size(32.dp) // Outer box size
+                            .size(40.dp) // Outer box size
                             .clip(CircleShape), // Clip the outer box to a circle
                         contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp) // Outer box size
+                                .size(40.dp) // Outer box size
                                 .padding(2.dp, 2.dp, 2.dp, 2.dp)
                                 .clip(CircleShape) // Clip the outer box to a circle
                                 /*.border(
@@ -199,10 +216,12 @@ fun CalendarScreen(pet: Pet, eventList: List<Event>, mediaList: List<Media>, cur
                             Text(
                                 text = day.toString(),
                                 color = when {
-                                    currentDate.month.value == currentMonth.value.monthValue && currentDate.dayOfMonth == day -> colorResource(id = R.color.prim) // Highlight event date
+                                    currentDate.month.value == currentMonth.value.monthValue && currentDate.dayOfMonth == day -> colorResource(
+                                        id = R.color.prim
+                                    ) // Highlight event date
                                     else -> colorResource(R.color.black_icon) // Transparent for other days
                                 },
-                                fontSize = if (currentDate.month == currentMonth.value.month && currentDate.dayOfMonth == day) 18.sp else 16.sp // Larger text for the current day
+                                fontSize = if (currentDate.month == currentMonth.value.month && currentDate.dayOfMonth == day) 22.sp else 18.sp // Larger text for the current day
                             )
                         }
                     }
