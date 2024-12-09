@@ -165,9 +165,9 @@ Az alkalmazás elérhető lesz a Google Play áruházban. A felhasználók szám
      3. Az adatokat elmenti a jobb felső sarokban lévő mentés ikonnal, és a rendszer azonnal frissíti a kisállat profilját.
 
 ### Képernyőtervek:
-![Screenshot1](/Screenshots/PetPal1%20(Small).png)
-![Screenshot2](/Screenshots/PetPal2%20(Small).png)
-![Screenshot4](/Screenshots/PetPal4%20(Small).png)
+![Screenshot1](/Screenshots/image-1.png)
+![Screenshot2](/Screenshots/image-2.png)
+![Screenshot3](/Screenshots/image-3.png)
 
 ### 6. Fizikai környezet
 
