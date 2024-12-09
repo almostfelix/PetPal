@@ -4,11 +4,13 @@ import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,10 +57,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -65,29 +70,47 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.petpal.R
+import com.smartdevices.petpal.db.Event
 import com.smartdevices.petpal.db.Media
 import com.smartdevices.petpal.db.Pet
 import com.smartdevices.petpal.db.PetViewModel
 import com.smartdevices.petpal.tools.PreferenceManager
 import com.smartdevices.petpal.ui.theme.JetpackComposeTestTheme
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import kotlin.math.min
 import kotlin.math.pow
 
 @Composable
-fun MainScreen(navController: NavController, viewModel: PetViewModel, preferenceManager: PreferenceManager) {
+fun MainScreen(
+    navController: NavController,
+    viewModel: PetViewModel,
+    preferenceManager: PreferenceManager
+) {
     viewModel.loadPets()
     viewModel.getThumbnails()
+    viewModel.loadBirthDayEvents()
     val thumbnailList: List<Media> by viewModel.thumbnails.collectAsState(initial = emptyList())
     val petsList: List<Pet> by viewModel.petsList.collectAsState(initial = emptyList())
+    val birthdayEvents: List<Event> by viewModel.birthDayEvents.collectAsState(initial = emptyList())
+
+    LaunchedEffect(petsList) {
+        if (petsList.isNotEmpty()) {
+                calculateBirthdayEventsForPets(viewModel, petsList, birthdayEvents)
+        }
+    }
 
     Log.d("Debug", thumbnailList.toString())
     JetpackComposeTestTheme {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = colorResource(id = R.color.bg))
         ) {
-            TopAppBarMainScreen(navController = navController)
+            val nextBirthday = birthdayEvents.minByOrNull { LocalDate.parse(it.date) }
+            TopAppBarMainScreen(navController = navController,
+                birthdayEvent = calculateNextBirthday(petsList, birthdayEvents)
+            )
             MainScreenBody(
                 pets = petsList,
                 thumbnailList = thumbnailList,
@@ -98,8 +121,113 @@ fun MainScreen(navController: NavController, viewModel: PetViewModel, preference
     }
 }
 
+// Function to calculate next birthday
+fun calculateNextBirthday(pets: List<Pet>, birthdayEvents: List<Event>): String {
+    val today = LocalDate.now()
+
+    // Find the pet with the next birthday
+    val nextBirthdayEvent = birthdayEvents
+        .filter { it.type == "birthday" }
+        .mapNotNull { event ->
+            pets.find { it.petId == event.petId }?.let { pet ->
+                // Parse the birthday and calculate the next birthday
+                val birthDate = LocalDate.parse(pet.birthDate)
+                val thisYearBirthday = birthDate.withYear(today.year)
+
+                val nextBirthday = if (thisYearBirthday.isBefore(today)) {
+                    thisYearBirthday.plusYears(1)  // if this year's birthday already passed, use next year
+                } else {
+                    thisYearBirthday
+                }
+
+                // Return the pet's name and days to the next birthday
+                val daysUntilBirthday = ChronoUnit.DAYS.between(today, nextBirthday)
+                pet.name to daysUntilBirthday
+            }
+        }
+        .minByOrNull { it.second }  // Find the pet with the closest birthday
+
+    // If we have a valid next birthday event
+    return if (nextBirthdayEvent != null) {
+        if (nextBirthdayEvent.second == 0L) {
+            val (petName, daysLeft) = nextBirthdayEvent
+            "Today is $petName's Birthday!"
+        }else {
+            val (petName, daysLeft) = nextBirthdayEvent
+            "$petName's Birthday in $daysLeft days"
+        }
+    } else {
+        "PetPal"
+    }
+}
+
+// Function to calculate birthdays and add events
+fun calculateBirthdayEventsForPets(
+    viewModel: PetViewModel,
+    pets: List<Pet>,
+    birthdayEvents: List<Event>
+) {
+    val today = LocalDate.now()
+
+    pets.forEach { pet ->
+        Log.d("Debug", "Calculating birthday for ${pet.name}")
+        pet.birthDate?.let { birthDate ->
+            // Parse the birth date (assuming ISO 8601 format: "yyyy-MM-dd")
+            val birthDateParsed = LocalDate.parse(birthDate)
+            val thisYearBirthday = birthDateParsed.withYear(today.year)
+
+            // Determine the next birthday
+            val nextBirthday = if (thisYearBirthday.isBefore(today)) {
+                thisYearBirthday.plusYears(1)
+            } else {
+                thisYearBirthday
+            }
+
+            // Check if event already exists for the pet
+            val existingEvent = birthdayEvents.find { it.petId == pet.petId }
+            Log.d("Debug", "Birthday event: $existingEvent")
+            Log.d("Debug", "Existing event: $existingEvent")
+
+            if (existingEvent != null) {
+                if (existingEvent.date != nextBirthday.toString()) {
+                    // Delete the old event and create a new one
+                    viewModel.deleteEventFromPet(event = existingEvent, pet.petId)
+                    viewModel.addEventToPet(
+                        event = Event(
+                            eventId = -1,
+                            petId = pet.petId,
+                            title = "Birthday",
+                            date = nextBirthday.toString(),
+                            description = "${pet.name}'s Birthday!",
+                            type = "birthday"
+                        ),
+                        petId = pet.petId
+                    )
+                }
+            } else {
+                // If no event exists, create a new one
+                val event = Event(
+                    eventId = -1,
+                    petId = pet.petId,
+                    title = "Birthday",
+                    date = nextBirthday.toString(),
+                    description = "${pet.name}'s Birthday!",
+                    type = "birthday"
+                )
+                viewModel.addEventToPet(event = event, petId = pet.petId)
+            }
+        }
+    }
+}
+
+
 @Composable
-fun MainScreenBody(pets: List<Pet>, thumbnailList: List<Media>, navController: NavController, viewModel: PetViewModel) {
+fun MainScreenBody(
+    pets: List<Pet>,
+    thumbnailList: List<Media>,
+    navController: NavController,
+    viewModel: PetViewModel
+) {
     val isSelectionMode = remember { mutableStateOf(false) }
     val selectedItems = remember { mutableStateListOf<Pet>() }
 
@@ -189,7 +317,7 @@ fun MainScreenBody(pets: List<Pet>, thumbnailList: List<Media>, navController: N
 }
 
 @Composable
-fun TopAppBarMainScreen(navController: NavController) {
+fun TopAppBarMainScreen(navController: NavController, birthdayEvent: String) {
     val context = LocalContext.current
     Box(
         modifier = Modifier
@@ -207,12 +335,12 @@ fun TopAppBarMainScreen(navController: NavController) {
             tint = Color.Unspecified
         )
 
-        /*
+
         // Center the Card in the Box
         Card(
             modifier = Modifier
                 .align(Alignment.Center)
-                .width(150.dp)
+                .width(230.dp)
                 .height(42.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -221,7 +349,7 @@ fun TopAppBarMainScreen(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(12.dp),
+                    .padding(16.dp, 0.dp, 16.dp, 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -238,56 +366,26 @@ fun TopAppBarMainScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Max birthday in 2 days!",
-                        fontSize = 11.sp,
+                        text = birthdayEvent,
+                        fontSize = 12.sp,
                         textAlign = TextAlign.Center,
-                        lineHeight = 11.sp
+                        lineHeight = 11.sp,
+                        maxLines = 1,
                     )
                 }
             }
-        }*/
-        Row(
+        }
+
+        Box(
             modifier = Modifier
-                .fillMaxHeight()
                 .align(Alignment.CenterEnd)
-                .width(100.dp),
-            horizontalArrangement = Arrangement.Center
+                .padding(0.dp, 0.dp, 12.dp, 0.dp)
         ) {
             Card(
                 modifier = Modifier
                     .width(40.dp)
                     .height(40.dp)
-                    .align(Alignment.CenterVertically),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
-                shape = RoundedCornerShape(25.dp),
-                onClick = { navController.navigate("add_pet_screen") }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(40.dp)
-                        .fillMaxHeight(),
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_add_32),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.accent_dark),
-                        modifier = Modifier
-                            .size(32.dp)
-                            .align(Alignment.Center)
-                    )
-                }
-
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Card(
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp)
-                    .align(Alignment.CenterVertically),
+                    .align(Alignment.Center),
                 onClick = { navController.navigate("settings_screen") },
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
                 elevation = CardDefaults.cardElevation(
@@ -311,7 +409,6 @@ fun TopAppBarMainScreen(navController: NavController) {
                             .align(Alignment.Center)
                     )
                 }
-
             }
         }
     }
@@ -319,11 +416,12 @@ fun TopAppBarMainScreen(navController: NavController) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CardMainScreen(pet: Pet,
-                   thumbnailList: List<Media>,
-                   isSelectionMode: Boolean,
-                   selectedItems: SnapshotStateList<Pet>,
-                   navController: NavController
+fun CardMainScreen(
+    pet: Pet,
+    thumbnailList: List<Media>,
+    isSelectionMode: Boolean,
+    selectedItems: SnapshotStateList<Pet>,
+    navController: NavController
 ) {
     val isSelected = remember { mutableStateOf(false) }
     Row(
@@ -332,34 +430,42 @@ fun CardMainScreen(pet: Pet,
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val borderWidth by animateDpAsState(
+            targetValue = if (isSelected.value) 3.dp else 0.dp, // Animate to a wider border when selected and back to 0 when deselected
+            animationSpec = tween(durationMillis = 300)
+        )
+
+        val borderColor =
+            if (borderWidth == 0.dp) Color.Transparent else colorResource(id = R.color.prim)
         Card(
             modifier = Modifier
                 .width(350.dp)
                 .height(235.dp)
-                .combinedClickable(
-                    onLongClick = {
-                        if (!isSelectionMode) {
-                            isSelected.value = true
-                            selectedItems.add(pet)
-                        } else {
-                            toggleSelection(pet, isSelected, selectedItems)
-                        }
-                    },
-                    onClick = {
-                        if (isSelectionMode) {
-                            toggleSelection(pet, isSelected, selectedItems)
-                        } else {
-                            navController.navigate("pet_ui_screen/${pet.petId}")
-                        }
-                    }
-                ),
+                .border(borderWidth, borderColor, RoundedCornerShape(12.dp)),
             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(0.dp),
+                    .padding(0.dp)
+                    .combinedClickable(
+                        onLongClick = {
+                            if (!isSelectionMode) {
+                                isSelected.value = true
+                                selectedItems.add(pet)
+                            } else {
+                                toggleSelection(pet, isSelected, selectedItems)
+                            }
+                        },
+                        onClick = {
+                            if (isSelectionMode) {
+                                toggleSelection(pet, isSelected, selectedItems)
+                            } else {
+                                navController.navigate("pet_ui_screen/${pet.petId}")
+                            }
+                        }
+                    ),
             ) {
                 Column(
                     modifier = Modifier
@@ -407,21 +513,25 @@ fun CardMainScreen(pet: Pet,
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp))
-                            .background(Color.Transparent)
-                            /*.innerShadow(
-                                color = Color.Black,
-                                cornersRadius = 0.dp,
-                                spread = 3.dp,
-                                blur = 16.dp,
-                                offsetY = 1.dp,
-                                offsetX = 0.dp,
-                                shadowTop = true,
-                                shadowBottom = false,
-                                shadowLeft = false,
-                                shadowRight = false
-                            )*/,
+                            .background(Color.Transparent),
+                        /*.innerShadow(
+                            color = Color.Black,
+                            cornersRadius = 0.dp,
+                            spread = 3.dp,
+                            blur = 16.dp,
+                            offsetY = 1.dp,
+                            offsetX = 0.dp,
+                            shadowTop = true,
+                            shadowBottom = false,
+                            shadowLeft = false,
+                            shadowRight = false
+                        )*/
                     ) {
-                        val painter = rememberAsyncImagePainter(thumbnailList.find { it.petId == pet.petId }?.url ?: "")
+                        val painter =
+                            rememberAsyncImagePainter(
+                                thumbnailList.find { it.petId == pet.petId }?.url
+                                    ?: ""
+                            )
                         val state = painter.state
 
                         val transition by animateFloatAsState(

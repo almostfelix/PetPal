@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var petViewModel: PetViewModel
-    private var keepSplashScreen = mutableStateOf(true)
+    public var keepSplashScreen = mutableStateOf(true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity() {
         // Pass the factory with context
         val factory = PetViewModelFactory(applicationContext)
         petViewModel = ViewModelProvider(this, factory)[PetViewModel::class.java]
+
+
 
         val preferenceManager = PreferenceManager(applicationContext)
         if (preferenceManager.getSaveMethod() == "NOT SET") {
@@ -197,4 +199,3 @@ class MainActivity : AppCompatActivity() {
         }
     }*/
 }
-

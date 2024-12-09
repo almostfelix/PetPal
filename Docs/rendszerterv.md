@@ -45,15 +45,15 @@ A **PetPal** alkalmazás célja, hogy átfogó platformot biztosítson a kisáll
    - **Felelős:** Fejlesztők
 
 6. **Alfa verzió kiadása:** Az első működőképes verzió, amely tartalmazza az alapfunkciókat. Ezt követi az elsődleges hibák azonosítása.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-12-01
    - **Felelős:** Fejlesztők, Tesztelők
 
 7. **Béta verzió kiadása:** Javításokkal és fejlesztésekkel kiegészült, közel végleges verzió, amelyet felhasználói tesztelésnek vetnek alá.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-12-06
    - **Felelős:** Fejlesztők, Tesztelők
 
 8. **Végleges rendszer telepítése:** A rendszer végső változatának közzététele.
-   - **Dátum:** TODO
+   - **Dátum:** 2024-12-10
    - **Felelős:** Fejlesztők
 
 9. **Végleges átadás:** A projekt hivatalos lezárása valamint a dokumentációk átadása.
@@ -179,12 +179,8 @@ Az alkalmazásban **nincs használatban vásárolt szoftverkomponens**. Az alkal
 
 #### Hardver és hálózati topológia:
 - **Klienseszközök:** A célplatform elsősorban Android-alapú mobilkészülékek, amelyek támogatják a Kotlin-alapú alkalmazás futtatását.
-- **Internetkapcsolat:** Bár az alkalmazás az interneten keresztül API-kat használ az állatok fajának és fajtájának beazonosítására, adatokat tárol a  felhőben, valamint "Facts about pets" megjelenítésére, ennek ellenére nincs szükség folyamatos internetkapcsolatra. Az adatok lokálisan kerülnek megjelenítésre, és az API használata csak az azonosítási funkciókhoz és a "Facts about pets" betöltésére szükséges.
+- **Internetkapcsolat:** Az alkalmazáshoz nincs szükség internetkapcsolatra
 
-#### Fizikai alrendszerek:
-- **Külső API-k:** Az alkalmazás **külső API-kat** használ kizárólag az állatfajok és fajták azonosításához, illetve "Facts about pets" megjelenítésére. Az API-k nem tárolnak adatokat, és nem történik adatfeldolgozás rajtuk keresztül. A PetPal alkalmazás **adatkezelése kétféleképpen történik:**
-  - Lokális adatbázis
-  - Firebase adatbázis
   
 #### Fejlesztő eszközök:
 - **Fejlesztői környezet:** Az alkalmazás fejlesztése az **Android Studio** környezetben zajlik, amely a hivatalos Android fejlesztői eszköz.
@@ -194,7 +190,6 @@ Az alkalmazásban **nincs használatban vásárolt szoftverkomponens**. Az alkal
 #### Keretrendszer és könyvtárak:
 - **Kotlin alapú fejlesztés:** Az alkalmazás fejlesztése Kotlin programozási nyelven történik, amely biztosítja a modern és hatékony Android alkalmazásfejlesztést.
 - **Jetpack Compose alapú felhasználói felület:** Az alkalmazás UI/UX tervezése Jetpack Compose-on keresztül történik, amely támogatja a vizuális komponensek pontos és strukturált elrendezését.
-- **Külső API integráció:** Az API használatával az alkalmazás állatfajok és fajták beazonosítását végzi, valamint érdekes tényeket ("Facts about pets") nyújt a felhasználóknak az állatokról. Az **API-k kizárólag információs célokat szolgálnak, nincs adatfeldolgozás vagy adatmentés.**
 
 #### Operációs rendszer:
 - **Célplatform:** Az alkalmazás Android operációs rendszert futtató mobilkészülékeken használható. A fejlesztés főként a legfrissebb Android verziókra optimalizált, de figyelembe veszi az idősebb verziók kompatibilitását is.
@@ -207,8 +202,6 @@ Az alkalmazás **MVVM (Model-View-ViewModel)** architektúrát követ, amely jó
 #### Az alkalmazás rétegei és komponensei:
 1. **Model (Adatkezelés):**
    - Lokálisan tárolja és kezeli a kisállatok egészségügyi adatait.
-   - Az API integrációk kezelésére szolgál (pl. fajta beazonosítás).
-   - Kezeli az adatokat a helyi és Firebase adatbázisokban.
    
 2. **View (Felhasználói interfész):**
    - Kotlin alapú fejlesztés Jetpack Compose segítségével Android Studio környezetben.
@@ -232,14 +225,11 @@ A rendszer helyben tárol adatokat, és nem kezel érzékeny információkat. Az
 ### 8. Implementációs terv
 
 #### Perzisztencia osztályok:
-Mivel az alkalmazás nem használ helyi adatbázist, a perzisztencia osztályok az API-kból érkező adatok feldolgozását és tárolását végzik átmenetileg, amíg az adatokra szükség van. Ezek az osztályok az alábbi funkciókat látják el:
-- **API válaszfeldolgozás:** Az API-k (pl. fajta beazonosítás) válaszainak lekérése és feldolgozása.
 - **Adatmodell osztályok:** A kisállatokkal kapcsolatos adatokat tartalmazzák, ideiglenesen tárolva a memóriában, amíg a felhasználóval való interakció tart.
 
 #### Üzleti logika osztályai:
-Az üzleti logika osztályai kezelik a felhasználói interakciók által kezdeményezett műveleteket, mint például az emlékeztetők beállítása és az adatok API-kal történő szinkronizálása. Az emlékeztető funkciók felelősek a következőért:
+Az üzleti logika osztályai kezelik a felhasználói interakciók által kezdeményezett műveleteket, mint például az emlékeztetők beállítása. Az emlékeztető funkciók felelősek a következőért:
 - **Emlékeztetők kezelése:** Emlékeztetők létrehozása és módosítása a felhasználó által megadott időpontok alapján (pl. oltások, állatorvosi látogatások).
-- **API szinkronizáció:** Adatok lekérése és szinkronizálása az API-val.
 
 #### Kliensoldal osztályai:
 
@@ -265,7 +255,6 @@ Az egységtesztek célja a kritikus funkciók ellenőrzése, különös tekintet
 - **Egészségügyi adatok kezelése:** Az egészségügyi rekordok hozzáadásának, megjelenítésének és módosításának tesztelése, különös figyelemmel a felhasználói beviteli hibákra (pl. érvénytelen dátumok, hiányzó adatok).
 - **Emlékeztetők beállítása és értesítések:** Az emlékeztetők helyes létrehozásának, értesítések ütemezésének és a felhasználó általi módosítások érvényesítésének ellenőrzése.
 
-Mivel a rendszer nem használ adatbázist, fontos tesztelni az API-integráció helyes működését, ideértve az esetleges hibakezelést (pl. API-hibák, időtúllépés).
 
 ### Felhasználói tesztelés a béta fázisban
 A béta tesztelés során a felhasználói visszajelzések alapján ellenőrizni kell az alkalmazás általános stabilitását és használhatóságát, különös figyelemmel a következőkre:

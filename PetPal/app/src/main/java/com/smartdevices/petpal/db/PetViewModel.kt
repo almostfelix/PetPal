@@ -27,6 +27,9 @@ class PetViewModel(context: Context) : ViewModel() {
     private val _thumbnails = MutableStateFlow<List<Media>>(emptyList())
     val thumbnails: StateFlow<List<Media>> = _thumbnails
 
+    private val _birthDayEvents = MutableStateFlow<List<Event>>(emptyList())
+    val birthDayEvents: StateFlow<List<Event>> = _birthDayEvents
+
     private val _errorState = MutableStateFlow<String?>(null)
     val errorState: StateFlow<String?> = _errorState
 
@@ -36,6 +39,16 @@ class PetViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             try {
                 _petsList.value = roomDB.getPets()
+            } catch (e: Exception) {
+                handleError(e)
+            }
+        }
+    }
+
+    fun loadBirthDayEvents() {
+        viewModelScope.launch {
+            try {
+                _birthDayEvents.value = roomDB.getBirthDayEvents()
             } catch (e: Exception) {
                 handleError(e)
             }

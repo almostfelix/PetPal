@@ -55,10 +55,11 @@ fun EventCard(events: List<Event>, currentPet: Pet, petViewModel: PetViewModel) 
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .combinedClickable(
-                        onClick = { },
-                        onLongClick = {
+                        onClick = {
                             editDialogEvent = event
-                            showDialog = true },
+                            showDialog = true
+                        },
+                        onLongClick = { },
                     ),
                 colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.bg)),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),

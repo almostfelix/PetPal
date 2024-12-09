@@ -33,6 +33,8 @@ class RoomDB(context: Context) {
     // Delete a pet from the local database
     suspend fun deletePet(pet: Pet) {
         appDatabase.petDao().deletePet(pet)
+        appDatabase.petDao().deleteAllEventsForPet(pet.petId)
+        appDatabase.petDao().deleteAllMediaForPet(pet.petId)
     }
 
 
@@ -42,6 +44,10 @@ class RoomDB(context: Context) {
 
     suspend fun getEventsForPet(petId: Int): List<Event> {
         return appDatabase.petDao().getEventsForPet(petId)
+    }
+
+    suspend fun getBirthDayEvents(): List<Event> {
+        return appDatabase.petDao().getBirthDayEvents()
     }
 
     suspend fun getLastEvent(): Event? {

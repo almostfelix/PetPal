@@ -43,7 +43,12 @@ android {
 
 dependencies {
 
-    implementation("dev.chrisbanes.haze:haze:1.1.1")
+    testImplementation(libs.androidx.junit.v113)
+    testImplementation("androidx.test:core:1.6.1")
+    testImplementation("androidx.test:rules:1.6.1")
+    testImplementation("androidx.test:runner:1.6.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    implementation(libs.haze)
     implementation(libs.material)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.coil.compose)

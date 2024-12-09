@@ -25,6 +25,18 @@ interface PetDao {
     @Delete
     suspend fun deletePet(pet: Pet)
 
+    @Query("DELETE FROM media WHERE petId = :petId")
+    suspend fun deleteAllMediaForPet(petId: Int) {
+        val media = getMediaForPet(petId)
+        media.forEach { deleteMedia(it) }
+    }
+
+    @Query("DELETE FROM event WHERE petId = :petId")
+    suspend fun deleteAllEventsForPet(petId: Int) {
+        val events = getEventsForPet(petId)
+        events.forEach { deleteEvent(it) }
+    }
+
     @Update
     suspend fun updatePet(pet: Pet)
 
@@ -45,6 +57,9 @@ interface PetDao {
 
     @Upsert
     suspend fun addEvent(event: Event)
+
+    @Query("SELECT * FROM event WHERE type = 'birthday'")
+    suspend fun getBirthDayEvents(): List<Event>
 
     @Upsert
     suspend fun addMedia(media: Media)

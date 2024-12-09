@@ -8,12 +8,8 @@ A vállalkozásunk egy mobilalkalmazás fejlesztését tervezi, amely segít a h
 | Modul               | ID  | Név                                   | Verzió | Kifejtés                                                                          |
 |---------------------|-----|---------------------------------------|--------|-----------------------------------------------------------------------------------|
 | Felhasználói élmény | K01 | Könnyen kezelhető rendszer            | 1.0    | A rendszernek intuitív felhasználói felülettel kell rendelkeznie, hogy a felhasználók könnyen navigálhassanak az alkalmazásban. Az összes funkció könnyen elérhető legyen, és a használat során ne legyen szükség különösebb technikai tudásra. |
-| Életkor konverzió   | K02 | Fajtaspecifikus életkor konverzió                       | 1.0    | Az alkalmazásnak lehetőséget kell biztosítania a háziállatok életkorának átszámítására emberi évekbe. A felhasználónak meg kell adnia az állat faját, születési dátumát és fajtáját, majd az alkalmazásnak automatikusan ki kell számítania az emberi életkort. |
-| Növekedési diagram   | K03 | Grafikus növekedési nyomon követés   | 1.0    | Az alkalmazásnak grafikus ábrázolást kell nyújtania a háziállat fejlődéséről (magasság, súly) az idő múlásával. A felhasználók könnyen rögzíthetik a méreteket, és az alkalmazásnak képesnek kell lennie az adatokat vizuálisan megjeleníteni. |
 | Emlékeztetők        | K04 | Születésnapi és állatorvosi emlékeztetők | 1.0 | Az alkalmazásnak értesítéseket kell küldenie a közelgő születésnapokról, örökbefogadási évfordulókról, valamint állatorvosi ellenőrzésekről. A felhasználók beállíthatják az emlékeztetők időpontját, és az alkalmazásnak figyelmeztetéseket kell küldenie a megfelelő időben. |
 | Digitális idővonal  | K05 | Képfeltöltés és idővonal             | 1.0    | A felhasználóknak lehetőséget kell biztosítani arra, hogy képeket tölthessenek fel háziállatukról különböző életkorokban. Az alkalmazásnak digitális idővonalon kell megjelenítenie ezeket a képeket, lehetővé téve a felhasználók számára, hogy visszatekintsenek az állatuk életére. |
-| Fajtaspecifikus információk | K06 | Fajtákhoz kapcsolódó érdekességek  | 1.0 | Az alkalmazásnak érdekes tényeket és tippeket kell nyújtania a háziállat fajtájához kapcsolódóan.|
-| Összehasonlítás      | K07 | Fajok életkorainak összehasonlítása | 1.0    | Az alkalmazásnak lehetőséget kell biztosítania arra, hogy a felhasználók különböző fajok életkorait összehasonlíthassák.|
 
 
 ## 3. Jelenlegi üzleti folyamatok modellje
