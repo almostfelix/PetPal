@@ -401,7 +401,7 @@ fun TopAppBarMainScreen(navController: NavController, birthdayEvent: String) {
                         .fillMaxHeight(),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.baseline_settings_32),
+                        painter = painterResource(R.drawable.baseline_account_circle_32),
                         contentDescription = null,
                         tint = colorResource(id = R.color.black_icon),
                         modifier = Modifier

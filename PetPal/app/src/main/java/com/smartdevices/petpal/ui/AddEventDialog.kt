@@ -81,7 +81,7 @@ fun AddEventDialog(
     var time by remember { mutableStateOf(event?.time?:"") }
     var type by remember { mutableStateOf(event?.type?:"") }
     var isGeneral by remember { mutableStateOf(true) }
-    if (type == "General") {
+    if (event != null && type == "general") {
         isGeneral = true
     } else {
         isGeneral = false
@@ -228,6 +228,51 @@ fun AddEventDialog(
                         )
                     }
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                // +1 day, +1 week buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            val c = Calendar.getInstance()
+                            val year = c.get(Calendar.YEAR)
+                            val month = c.get(Calendar.MONTH)
+                            val day = c.get(Calendar.DAY_OF_MONTH)
+                            c.set(year, month, day + 1)
+                            date = String.format("%04d-%02d-%02d", year, month + 1, day + 1)
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = colorResource(id = R.color.prim),
+                            contentColor = colorResource(id = R.color.bg),
+                            disabledContainerColor = colorResource(id = R.color.prim),
+                            disabledContentColor = colorResource(id = R.color.bg),
+                        )
+                    ) {
+                        Text("+1 Day")
+                    }
+                    Button(
+                        onClick = {
+                            val c = Calendar.getInstance()
+                            val year = c.get(Calendar.YEAR)
+                            val month = c.get(Calendar.MONTH)
+                            val day = c.get(Calendar.DAY_OF_MONTH)
+                            c.set(year, month, day + 7)
+                            date = String.format("%04d-%02d-%02d", year, month + 1, day + 7)
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonColors(
+                            containerColor = colorResource(id = R.color.prim),
+                            contentColor = colorResource(id = R.color.bg),
+                            disabledContainerColor = colorResource(id = R.color.prim),
+                            disabledContentColor = colorResource(id = R.color.bg),
+                        )
+                    ) {
+                        Text("+1 Week")
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 

@@ -104,7 +104,7 @@ fun SettingsScreen(navController: NavController) {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "Settings",
+                                text = "Account Settings",
                                 fontSize = 14.sp,
                                 textAlign = TextAlign.Center,
                                 lineHeight = 18.sp,
@@ -117,7 +117,6 @@ fun SettingsScreen(navController: NavController) {
 
 
             }
-            FillerText("Account", 16, 16)
             if (preferenceManager.getSaveMethod() == "local") {
 
                 Card(
@@ -248,7 +247,7 @@ fun SettingsScreen(navController: NavController) {
             }
 
 
-
+            /*
             FillerText("General", 16, 0)
 
             Card(
@@ -336,7 +335,7 @@ fun SettingsScreen(navController: NavController) {
                 }
 
             }
-
+            */
         }
     }
 }

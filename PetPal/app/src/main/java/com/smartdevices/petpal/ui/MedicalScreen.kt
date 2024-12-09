@@ -35,13 +35,10 @@ import com.petpal.R
 import com.smartdevices.petpal.db.Event
 import com.smartdevices.petpal.db.Pet
 import com.smartdevices.petpal.db.PetViewModel
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
 
 @Composable
 fun MedicalScreen(pet: Pet, events: List<Event>, petViewModel: PetViewModel) {
     val medicalInfo = pet.medicalInfo
-    val hazeState = remember { HazeState() }
     Column(
         modifier = Modifier
             .background(color = colorResource(id = R.color.bg))
