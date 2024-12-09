@@ -54,4 +54,4 @@ Az alkalmazás **MVVM** architektúrát követ, amely biztosítja a tiszta adat�
 
 ## License
 
-Ez a projekt az **MIT License** alatt érhető el. További részletekért tekintsd meg a [LICENSE](https://www.apache.org/licenses/LICENSE-2.0.txt) fájlt.
+Ez a projekt az **Apache License** alatt érhető el. További részletekért tekintsd meg a [LICENSE](https://www.apache.org/licenses/LICENSE-2.0.txt) fájlt.
